@@ -110,12 +110,12 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Relatório de Performance ATM 2023},
+  pdftitle={Relatório de Performance ATM 2022},
   pdfauthor={Silveira},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
-\title{Relatório de Performance ATM 2023}
+\title{Relatório de Performance ATM 2022}
 \author{Silveira}
 \date{2023-08-08}
 
@@ -143,11 +143,42 @@
 \setcounter{tocdepth}{1}
 \tableofcontents
 }
-\hypertarget{sobre}{%
-\chapter{Sobre}\label{sobre}}
+\hypertarget{sumuxe1rio-executivo}{%
+\chapter{Sumário executivo}\label{sumuxe1rio-executivo}}
 
-Esse será o capítulo 1.
-Mais uma linha de teste.
+A indústria do transporte aéreo contribui significativamente para a economia do Brasil e do mundo. Apesar dos impactos na economia global decorrentes da pandemia da COVID-19 e do conflito entre Rússia e Ucrânia, espera-se que o setor cresça no longo prazo e o Sistema de Controle do Espaço Aéreo Brasileiro (SISCEAB) deverá estar preparado para essa evolução e as consequências decorrentes desse crescimento.
+
+A Comissão de Performance ATM (CP-ATM) produziu de forma colaborativa o Relatório de Performance do SISCEAB, utilizando métricas e definições comumente acordadas para comparar, entender e melhorar o desempenho dos Serviços de Navegação Aérea brasileiros, por meio da gestão de desempenho das Organizações Regionais do Departamento de Controle do Espaço Aéreo (DECEA). Esta edição encontra-se disponível on-line (\url{http://performance.decea.mil.br}) no site de performance do DECEA, juntamente com versões anteriores e outros produtos de performance.
+
+Apesar do Relatório de Performance ser atualizado anualmente, as informações e indicadores nele publicados são monitorados e disponibilizados no site do DECEA, com atualizações periódicas. As boas práticas e lições aprendidas nas análises são coordenadas pela CP-ATM com as Organizações Regionais, com foco no desenvolvimento de novos indicadores de performance e na evolução do sistema de Gerenciamento de Tráfego Aéreo (ATM) nacional.
+
+Este relatório concentra-se em Áreas de Performance (KPA) do Plano Global de Navegação Aérea (GANP ), da Organização de Aviação Civil Internacional (OACI), e seu escopo atende às diretrizes do Plano de Performance ATM do DECEA 2022-2023 (PCA 100-3), conforme mostrado no esquema a seguir:
+
+\begin{figure}
+\centering
+\includegraphics{imagens/fig1.jpg}
+\caption{Imagem teste}
+\end{figure}
+
+A análise comparativa de desempenho entre os sistemas locais mostra as particularidades de cada órgão ATS, com semelhanças e diferenças na prestação do serviço de navegação aérea e na performance das Organizações Regionais. Entre as principais conclusões, destacam-se:
+
+\begin{itemize}
+\tightlist
+\item
+  Em geral, a prestação dos serviços de navegação aérea se reflete em um número mais elevado de controladores de tráfego aéreo (ATCO) nas regiões com maior densidade como a FIR-BS (CINDACTA I).
+\item
+  Em geral, a prestação dos serviços de navegação aérea se reflete em um número mais elevado de controladores de tráfego aéreo (ATCO) nas regiões com maior densidade como a FIR-BS (CINDACTA I).
+\item
+  As particularidades de cada Organização Regional ficam evidentes quando se confrontam números de movimentos por localidade ou por temporada; número de ATCO por localidade, por tamanho de região, por órgão, por total de movimentos, por complexidade ou por exigência do nível de inglês; por condições meteorológicas, dentre outras.
+\item
+  As capacidades de pista e de espaço aéreo estão projetadas para atender os níveis atuais de demanda, bem como o crescimento futuro de curto e médio prazos. Não houve mudanças significativas nos valores declarados de capacidade de espaço aéreo em 2022.
+\item
+  Em geral, o sistema apresentou associação entre menor demanda e maior eficiência, considerando especialmente os indicadores de pontualidade, de tempo adicional de táxi, de tempo adicional na terminal e de variabilidade de tempo de voo.
+\item
+  Considerando o escopo deste Relatório, os valores médios anuais encontrados no SISCEAB foram de: Pontualidade de Partida -- 84,3\% / Pontualidade de Chegada -- 67,7\% / Tempo Adicional de Taxi-out -- 3,65 min / Tempo Adicional de Taxi-in -- 1,75 min / Tempo Adicional de Chegada em TMA -- 4 min (C100) e 3 min (C40) / Índice de Operacionalidade dos ATCO -- 85,4\%.
+\item
+  Foram apresentadas algumas implantações recentes no SISCAB que podem ter impactado a performance geral do sistema ATM, incluindo uma abordagem inicial sobre os drones (UAS e derivados).
+\end{itemize}
 
 \hypertarget{usage}{%
 \section{Usage}\label{usage}}
@@ -171,13 +202,7 @@ You can render the HTML version of this example book without changing anything:
   Click on \textbf{Build Book}, then select your output format, or select ``All formats'' if you'd like to use multiple formats from the same book source files.
 \end{enumerate}
 
-Or build the book from the R console:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{bookdown}\SpecialCharTok{::}\FunctionTok{render\_book}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
+Or build the book from the R console:\texttt{\{r,\ eval=FALSE\}\ bookdown::render\_book()}
 
 To render this example to PDF as a \texttt{bookdown::pdf\_book}, you'll need to install XeLaTeX. You are recommended to install TinyTeX (which includes XeLaTeX): \url{https://yihui.org/tinytex/}.
 
