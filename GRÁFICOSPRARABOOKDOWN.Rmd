@@ -4,31 +4,31 @@ output: html_document
 date: '2023-03-30'
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+<!-- ```{r setup, include=FALSE} -->
+<!-- knitr::opts_chunk$set(echo = TRUE) -->
 
-library(tidyverse)
-library(lubridate)
-library(dplyr)
-library(readr)
-library(patchwork) #pacote que soma os gráficos 
-library(leaflet)#pacote para mapas dinamicos
-library(geobr)#pacote para mapa simples
-library(readxl)
-library(sf)#pacote para mapa simples
-library(rgdal) #pacote para API
-library(httr) #pacote para API
-library(jsonlite) #pacote para API
-library(scales)
-library(ggtext)
-library(gridExtra)
-library(Rcpp)# pacote usado para corrigir um erro
-library(ggimage)#pacote para salvar os gráficos como imagem
-library(flexdashboard)
-library(ggrepel)
-library(zoo)
+<!-- library(tidyverse) -->
+<!-- library(lubridate) -->
+<!-- library(dplyr) -->
+<!-- library(readr) -->
+<!-- library(patchwork) #pacote que soma os gráficos  -->
+<!-- library(leaflet)#pacote para mapas dinamicos -->
+<!-- library(geobr)#pacote para mapa simples -->
+<!-- library(readxl) -->
+<!-- library(sf)#pacote para mapa simples -->
+<!-- library(rgdal) #pacote para API -->
+<!-- library(httr) #pacote para API -->
+<!-- library(jsonlite) #pacote para API -->
+<!-- library(scales) -->
+<!-- library(ggtext) -->
+<!-- library(gridExtra) -->
+<!-- library(Rcpp)# pacote usado para corrigir um erro -->
+<!-- library(ggimage)#pacote para salvar os gráficos como imagem -->
+<!-- library(flexdashboard) -->
+<!-- library(ggrepel) -->
+<!-- library(zoo) -->
 
-```
+<!-- ``` -->
 
 #1. BDS
 

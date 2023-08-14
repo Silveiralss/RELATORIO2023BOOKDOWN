@@ -1,6 +1,183 @@
-# Cross-references {#cross}
 
-Cross-references make it easier for your readers to find and link to elements in your book.
+
+
+
+
+
+# Características do SISCEAB {#cross}
+
+O SISCEAB compreende uma área extensa, revelando características singulares entre as Organizações Regionais do DECEA em termos de:
+
+- Organização dos Serviços de Tráfego Aéreo (ATS);
+- Tipos de órgãos ATS;
+- Características do sistema ATM;
+- Perfil atual e futuro da demanda;
+- Efetivo de Controlador de Tráfego Aéreo (ATCO);
+- Fatores meteorológicos; e
+- Projetos no SISCEAB.
+
+Tais particularidades são abordadas ao longo deste capítulo em face da influência que esses fatores têm nos indicadores de performance ATM.
+
+As características dos aeródromos, das TMA e das FIR, bem como suas respectivas complexidades e carga de trabalho associada, podem indicar a necessidade de alocar um efetivo maior de ATCO em determinados órgãos de controle, independentemente do tamanho da área geográfica sob sua jurisdição.
+
+<div align="center">
+![Imagem teste](imagens/fig10.jpg)
+
+A quantidade de movimentos anuais dos principais aeroportos, das TWR, dos APP e dos ACC pode ser conferida no Anuário Estatístico de Tráfego Aéreo, documento produzido pelo CGNA e disponível em http://portal.cgna.decea.mil.br, na aba Recursos, ou em http://performance.decea.mil.br/ , na aba Produtos.
+
+## Organização dos Serviços de Navegação Aérea
+
+O DECEA é o órgão central do SISCEAB, responsável pela gestão do tráfego aéreo, que envolve todas as atividades relacionadas à segurança e à eficiência do controle do espaço aéreo brasileiro.
+
+O espaço aéreo sob responsabilidade do Brasil é uma área de aproximadamente 22 milhões de km2, organizada em cinco Regiões de Informação de Voo (FIR), contendo cinco Centros de Controle de Área (ACC), 42 Controles de Aproximação (APP), 57 Torres de Controle de Aeródromo (TWR), uma Torre de Controle Digital (D-TWR), 75 Rádios (AFIS) e cinco Rádios Remotas (R-AFIS).
+
+O CGNA é a organização responsável pelo serviço de Gerenciamento de Fluxo de Tráfego Aéreo (ATFM) no espaço aéreo brasileiro, aplicando medidas ATFM, quando necessário, e conduzindo o processo de tomada de decisões colaborativas com a Comunidade ATM nacional (companhias aéreas, aeroportos, órgãos de controle etc.). Além disso, também coordena a gestão do espaço aéreo, o sistema de tratamento de planos de voo, o banco de dados estatísticos, as análises de indicadores e pós-operações, bem como outras atividades relacionadas à navegação aérea.
+
+## Órgãos ATS – ACC / APP / TWR / AFIS
+
+Os órgãos ATS prestam os Serviços de Tráfego Aéreo, que incluem os Serviços de Controle de Tráfego Aéreo, de Informação de Voo e de Alerta.
+Popularmente, o tema controle de tráfego aéreo é associado à figura de uma torre de controle (TWR).
+
+Entretanto, a TWR é uma das engrenagens do grande sistema que compõe o SISCEAB, no qual, também estão envolvidos órgãos de controle como os Centros de Controle de Área (ACC) e os Controles de Aproximação (APP). Adicionalmente, existem as Rádios que, por sua vez, são órgãos prestadores do Serviço de Informação de Voo de Aeródromo (AFIS) que complementam os órgãos provedores dos Serviços de Tráfego Aéreo (ATS).
+
+Cada um desses órgãos ATS possui a sua respectiva área de jurisdição, regulamentos inerentes ao serviço prestado e equipamentos adequados para o provimento de suas atribuições. O ANEXO A apresenta os Regionais e os respectivos órgãos ATS sob sua jurisdição.
+
+## Centro de Controle de Área – ACC
+
+O ACC é um órgão de controle de tráfego aéreo encarregado de prestar os Serviços ATS às aeronaves que evoluem na Região de Informação de Voo (FIR). A FIR é uma porção do espaço aéreo com grandes dimensões em que ocorrem as fases de subida, descida, sobrevoo e cruzamento entre diferentes aeronaves, com performances distintas e em níveis de voo variados.
+
+Os ACC brasileiros trabalham ininterruptamente com equipes de controladores de tráfego aéreo, militares especialistas da Aeronáutica que se revezam em turnos específicos de serviço.
+
+Os ACC dispõem de modernas tecnologias  para o provimento seguro, ordenado e rápido do tráfego aéreo. Dentre esses recursos, destacam-se:
+
+- SAGITARIO – Sistema Avançado de Gerenciamento de Informações de Tráfego Aéreo e Relatório de Interesse Operacional;
+- CPDLC – Comunicações por Enlace de Dados Controlador-Piloto; e
+- ADS-C – Vigilância Dependente Automática – Contrato.
+
+
+## Controle de Aproximação - APP
+
+O APP é um órgão de controle de tráfego aéreo encarregado de prestar os serviços requeridos pelas aeronaves partindo e chegando nos aeroportos situados no interior de uma área de controle terminal.
+
+No Brasil, os APP contam com equipes de ATCO, compostas por militares especialistas da Aeronáutica, da Marinha do Brasil ou do Exército Brasileiro. Adicionalmente, alguns APP são integrados por profissionais civis, oriundos de outros Provedores de Serviços de Navegação Aérea (PSNA) como, por exemplo, a NAV Brasil e a INFRAERO. Mesmo com entidades externas ao Comando da Aeronáutica , todo o processo de formação de controladores bem como a gestão de licenças e habilitações é realizada pelo DECEA.
+
+Os APP brasileiros dispõem de modernas tecnologias para o provimento seguro, ordenado e rápido do tráfego aéreo. Dentre esses recursos, destacam-se:
+
+- SAGITARIO (sistema de visualização dos dados radar);
+- AMAN (Sistema de Gerenciamento de Chegada);
+- SITTI (Central de áudio/telefonia integrada); e
+- ADS-B (Vigilância Dependente Automática por Radiodifusão).
+
+## Torre de Controle de Aeródromo - TWR
+
+A TWR é um órgão de controle de tráfego aéreo situada nos aeroportos de maior movimento.
+
+De modo geral, a TWR é responsável por prestar os serviços requeridos pelas aeronaves apenas durante as fases de decolagem e pouso em um aeródromo. Incluem-se entre esses serviços o controle no solo de viaturas e pessoas na área de manobras e, quando necessário, o controle dos voos no circuito de tráfego visual do aeródromo.
+
+Da mesma forma que ocorre com os APP, as TWR do Brasil também contam com equipes de ATCO que podem ser especialistas da Aeronáutica ou profissionais de entidades externas.
+
+Adicionalmente, a incorporação de novas tecnologias ATM, como, por exemplo, o TATIC-TWR, o DCL (autorização de tráfego via enlace de dados) e o radar de solo, permitem otimizar a segurança, a eficiência e o gerenciamento em TWR de elevado fluxo de aeronaves.
+
+Alinhando recursos tecnológicos atuais com práticas inovadoras, o DECEA implementou, no aeródromo de Santa Cruz, a primeira Torre Digital (D-TWR) do SISCEAB.
+
+Na operação da D-TWR Santa Cruz, a visualização tradicional do ATCO acerca do cenário operacional foi substituída pela visualização de um sistema de vigilância, composto por câmeras de alta resolução e monitores, que proporcionam aos controladores uma visão panorâmica do aeródromo e de sua vizinhança.
+
+A primeira D-TWR brasileira foi mais um grande passo à modernização da infraestrutura aeroportuária nacional, permitindo fomentar experiências e conhecimentos para futuras aplicações nos demais aeródromos do país.
+
+Nos aeroportos cujo volume de operações aéreas é considerado baixo, não existe necessidade de instalação de uma TWR. Nesses casos, é disponibilizado o AFIS, cujo serviço é prestado por Operadores de Estação Aeronáutica.
+
+No Brasil, as estações aeronáuticas são identificadas como Rádios e prestam o Serviço de Informação de Voo de Aeródromo (AFIS) visando proporcionar informações relevantes aos aeronavegantes.
+
+Eventualmente, alguns APP ou TWR, em determinados horários e de acordo com critérios estabelecidos, podem prestar o AFIS. Isso permite modular o serviço prestado em função da demanda existente, racionalizando recursos, sem prejuízo à segurança operacional.
+
+A partir de 2016, foram viabilizados os órgãos AFIS remotos (R-AFIS) em aeroportos de baixo movimento, sendo o serviço prestado de forma remota à localidade. Atualmente, as localidades de Fernando de Noronha (na FIR-RE), Oiapoque e Vilhena (na FIR-AZ), Uruguaiana e Corumbá (na FIR-CW) operam na configuração R-AFIS.
+
+As Rádios, remotas ou não, contam com equipes de Operadores de Estação Aeronáutica, que podem ser militares ou civis, da Aeronáutica ou de outras organizações.
+
+## AFIS
+
+No Brasil, as estações aeronáuticas são identificadas como Rádios e prestam o Serviço de Informação de Voo de Aeródromo (AFIS) visando proporcionar informações relevantes aos aeronavegantes.
+
+Eventualmente, alguns APP ou TWR, em determinados horários e de acordo com critérios estabelecidos, podem prestar o AFIS. Isso permite modular o serviço prestado em função da demanda existente, racionalizando recursos, sem prejuízo à segurança operacional.
+
+A partir de 2016, foram viabilizados os órgãos AFIS remotos (R-AFIS) em aeroportos de baixo movimento, sendo o serviço prestado de forma remota à localidade. Atualmente, as localidades de Fernando de Noronha (na FIR-RE), Oiapoque e Vilhena (na FIR-AZ), Uruguaiana e Corumbá (na FIR-CW) operam na configuração R-AFIS.
+
+As Rádios, remotas ou não, contam com equipes de Operadores de Estação Aeronáutica, que podem ser militares ou civis, da Aeronáutica ou de outras organizações.
+
+## Organizações Regionais do DECEA
+
+O Quadro 5 apresenta as principais características do sistema ATM brasileiro, que permite identificar o cenário de cada Organização Regional.
+
+<div align="center">
+![Imagem teste](imagens/fig11.jpg)
+
+**NOTA 1:** A metodologia que mede a área geográfica de cada Regional sofreu uma pequena modificação: no Relatório de 2021, se utilizou o critério da jurisdição, que excluía a área do CRCEA-SE das FIR sobrejacentes. Nesta edição, foi utilizada a delimitação geográfica de cada FIR. Assim, a área do CRCEA-SE deixa de ser agregada no cômputo geral do SISCEAB, que é igual ao somatório de suas cinco FIR. 
+
+**NOTA 2:** Em 2022, houve redimensionamento das FIR Amazônica, Atlântico e Recife. Em 16 de junho, parte da FIR-AZ passou para a FIR-AO. Em 1º de dezembro de 2022, parte da FIR-AO passou para a FIR-RE.
+
+**NOTA 3:** As informações relativas aos ATCO foram extraídas do Sistema de Gestão de Pessoal Operacional (SGPO), com base nos detentores de licença de ATCO em atividade, sendo incluídos os graduados militares BCT (da ativa ou da reserva), estagiários, ATCO de Defesa Aérea, oficiais CTA e civis DACTA contabilizados em cada Regional. No efetivo total do SISCEAB e no percentual operacional, além dos ATCO já informados nos Regionais, são considerados também os militares alocados em unidades fora dos Regionais, mas não são considerados aqueles em formação na Escola de Especialistas de Aeronáutica (EEAR). Foram incluídas informações específicas sobre operadores de outras Forças, da NAVBRASIL e demais PSNA.
+
+**NOTA 4:** Em relação aos voos controlados, a quantidade de voos foi calculada por FIR/Regional, com base no número de movimentos de 1º/01/2022 a 31/12/2022 constantes no SETA Millenium, excluindo-se os movimentos repetidos nas duas bases (das localidades de origem e de destino). 
+
+**NOTA 5:** Os dados descritos na NOTA 4 foram utilizados para o cálculo da densidade, em número de voos/km2. A partir daí, foi considerada a inclusão da área da FIR-AO, representada com os valores entre parênteses (0,07 para o SISCEAB e 0,03 para o CINDACTA III). Assim, os valores sem os parênteses representam a densidade do SISCEAB e do CINDACTA III desconsiderando a área da FIR-AO.
+
+**NOTA 6:** A produtividade foi calculada na grandeza de mil voos por ATCO operacional.
+
+**NOTA 7:** O share da aviação geral indica a participação deste segmento em relação ao total de movimentos.
+
+**NOTA 8:** Em relação ao número de ACC, APP, TWR e AFIS, as informações foram obtidas nas publicações AIP-Brasil, ROTAER e no Portal AISWEB, do DECEA, conforme o ANEXO A.
+
+**NOTA 9:** A quantidade de aeródromos foi contabilizada de acordo com o site de performance do DECEA. Para o cálculo do quantitativo de aeródromos sem órgãos ATS foi considerado o total de aeródromos que não possuem TWR, D-TWR, AFIS e R-AFIS.
+
+
+## Caracterização da demanda
+
+O objetivo geral dos serviços de tráfego aéreo é o fornecimento de um fluxo de tráfego aéreo seguro, ordenado e eficiente. Para fins de comparações operacionais, é importante ter um bom entendimento da demanda nos principais aeroportos do SISCEAB, do ranking dos aeroportos, da participação de movimentos por FIR, das rotas mais voadas pela aviação comercial, da densidade do tráfego e como a frota é composta, de acordo com a classificação das aeronaves em leve, média ou pesada.
+
+A caracterização da demanda de tráfego aéreo no Brasil é detalhada nos tópicos a seguir.
+
+<div align="center">
+![Imagem teste](imagens/fig12.jpg)
+
+### Demanda nos principais aeroportos do SISCEAB
+
+Em 2022, a demanda nos principais aeroportos brasileiros apresentou números muito próximos ao volume de operações aéreas observado em 2019, ano de referência pré-pandemia. Nessa seção, são considerados os 34 principais aeroportos, contabilizando as respectivas operações de pouso e decolagem.
+
+Nesse sentido, a Figura 3 apresenta a média móvel semanal  de pousos e decolagens realizados nos principais aeroportos do SISCEAB nos últimos anos. Em 2019, foi observada pouca variação ao longo do ano, com uma média em torno de 5.500 operações de pousos e decolagens por dia. A partir de março de 2020, observa-se uma queda significativa na média móvel em função da pandemia da COVID-19. No ano seguinte, apesar da recuperação inicial, os meses de março, abril e maio mostraram novas contrações da demanda em virtude da segunda onda da COVID-19.
+
+Ao fim do ano passado, a média móvel de operações nos principais aeroportos estava acima de 5.000 movimentos por dia, caracterizando, assim, a recuperação da demanda nacional e a retomada dos voos no cenário pós-covid (o “novo normal”).
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height=3}
+
+Dados_Base34_2022 <- read_excel("data/Dados_Base34_2022.xlsx", 
+                                col_types = c("date", "text", "numeric"))
+
+Dados_Base34_2022 <-Dados_Base34_2022  %>%
+  mutate( ROLLSEV = rollmean(x=Total, k=7, fill = NA))
+
+Dados_Base34_2022 %>% ggplot(aes(x=Data)) +
+  #geom_point(aes(y = Total), color= "#4682B4",size=.5) +
+  geom_line(aes(y = ROLLSEV), color = "royalblue4") +
+  scale_y_continuous(limits = c(0,7000))+
+  labs( x = NULL, y = "Média móvel diária - 7 dias") +
+  theme_bw()
+
+
+
+
+```
+
+#### Aviação comercial doméstica
+
+A Erro! Autoreferência de indicador não válida. apresenta o volume de operações de pouso e decolagem nos principais aeroportos brasileiros  e a variação observada ao comparar 2022 com 2019. Pode-se verificar que a demanda comercial doméstica operou acima de 90% do volume de 2019 de maio a dezembro de 2022, sendo maio o mês com o melhor desempenho (apenas 2,9% abaixo do volume de 2019).
+
+A aviação comercial doméstica nos principais aeroportos brasileiros operou com 89,8% do volume pré-pandemia (10,2% abaixo do volume de 2019).
+
+
+
+
+
+
 
 ## Chapters and sub-chapters
 

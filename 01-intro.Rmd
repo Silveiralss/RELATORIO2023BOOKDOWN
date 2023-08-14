@@ -1,5 +1,1122 @@
 
 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+library(readr)
+library(patchwork) #pacote que soma os gráficos 
+library(leaflet)#pacote para mapas dinamicos
+library(geobr)#pacote para mapa simples
+library(readxl)
+library(sf)#pacote para mapa simples
+library(rgdal) #pacote para API
+library(httr) #pacote para API
+library(jsonlite) #pacote para API
+library(scales)
+library(ggtext)
+library(gridExtra)
+library(Rcpp)# pacote usado para corrigir um erro
+library(ggimage)#pacote para salvar os gráficos como imagem
+library(flexdashboard)
+library(ggrepel)
+library(zoo)
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+URL_BASE <- "http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area="
+
+BDS_KPI_01 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_01")
+BDS_KPI_01_TEXT <- content(BDS_KPI_01, "text")
+BDS_KPI_01_JSON <- fromJSON(BDS_KPI_01_TEXT,flatten = TRUE)
+BDS_KPI_01_DF <- as.data.frame(BDS_KPI_01_JSON) %>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez) %>% 
+  mutate(movimentos.percentual_ano=movimentos.percentual_ano, movimentos.jan=movimentos.jan,
+         movimentos.fev=movimentos.fev, movimentos.mar=movimentos.mar,
+         movimentos.abr=movimentos.abr, movimentos.mai=movimentos.mai,
+         movimentos.jun=movimentos.jun, movimentos.jul=movimentos.jul,
+         movimentos.ago=movimentos.ago, movimentos.set=movimentos.set,
+         movimentos.out=movimentos.out, movimentos.nov=movimentos.nov,
+         movimentos.dez=movimentos.dez)
+
+#uma maneira mais fácil de modificar o nome das colunas é usando o colnames()
+
+COL_NAMES_KPI01 <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_01_DF) <- COL_NAMES_KPI01
+
+######################
+
+BDS_KPI_01_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_01&regional=s")
+BDS_KPI_01_TEXT_REGIONAL <- content(BDS_KPI_01_REGIONAL, "text")
+BDS_KPI_01_JSON_REGIONAL <- fromJSON(BDS_KPI_01_TEXT_REGIONAL,flatten = TRUE)
+BDS_KPI_01_REGIONAL_DF <- as.data.frame(BDS_KPI_01_JSON_REGIONAL)
+
+
+
+
+
+
+
+########
+
+BDS_KPI_02 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_02")
+BDS_KPI_02_TEXT <- content(BDS_KPI_02, "text")
+BDS_KPI_02_JSON <- fromJSON(BDS_KPI_02_TEXT,flatten = TRUE)
+BDS_KPI_02_DF <- as.data.frame(BDS_KPI_02_JSON)
+
+########
+
+BDS_KPI_02_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_02&regional=s")
+BDS_KPI_02_REGIONAL_TEXT <- content(BDS_KPI_02_REGIONAL, "text")
+BDS_KPI_02_REGIONAL_JSON <- fromJSON(BDS_KPI_02_REGIONAL_TEXT,flatten = TRUE)
+BDS_KPI_02_REGIONAL_DF <- as.data.frame(BDS_KPI_02_REGIONAL_JSON)
+
+
+#########
+
+BDS_KPI_06 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_06")
+BDS_KPI_06_TEXT <- content(BDS_KPI_06, "text")
+BDS_KPI_06_JSON <- fromJSON(BDS_KPI_06_TEXT,flatten = TRUE)
+BDS_KPI_06_DF <- as.data.frame(BDS_KPI_06_JSON)
+
+##########
+
+
+BDS_IDBR_06_TWR <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=IDBR_06&regional=TWR")
+BDS_IDBR_06_TWR_TEXT <- content(BDS_IDBR_06_TWR, "text")
+BDS_IDBR_06_TWR_JSON <- fromJSON(BDS_IDBR_06_TWR_TEXT,flatten = TRUE)
+BDS_IDBR_06_TWR_DF <- as.data.frame(BDS_IDBR_06_TWR_JSON)
+
+############
+
+BDS_IDBR_06_APP <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=IDBR_06&regional=APP")
+BDS_IDBR_06_APP_TEXT <- content(BDS_IDBR_06_APP, "text")
+BDS_IDBR_06_APP_JSON <- fromJSON(BDS_IDBR_06_APP_TEXT,flatten = TRUE)
+BDS_IDBR_06_APP_DF <- as.data.frame(BDS_IDBR_06_APP_JSON)
+
+############
+
+BDS_IDBR_06_ACC <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=IDBR_06&regional=ACC")
+BDS_IDBR_06_ACC_TEXT <- content(BDS_IDBR_06_ACC, "text")
+BDS_IDBR_06_ACC_JSON <- fromJSON(BDS_IDBR_06_ACC_TEXT,flatten = TRUE)
+BDS_IDBR_06_ACC_DF <- as.data.frame(BDS_IDBR_06_ACC_JSON)
+
+BDS_IDBR_06_ACC_DF <- BDS_IDBR_06_ACC_DF %>% mutate(ACC = case_when(movimentos.aero == "BRASIL" ~ "SISCEAB",
+                         movimentos.aero == "SBBS" ~ "ACC Brasília",
+                         movimentos.aero == "SBCW" ~ "ACC Curitiba",
+                         movimentos.aero == "SBRE" ~ "ACC Recife",
+                         movimentos.aero == "SBAZ" ~ "ACC Amazônico",
+                         movimentos.aero == "SBAO" ~ "ACC Atlântico"))
+
+##########
+
+
+
+
+
+
+
+BDS_KPI_08_C40 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_08_C40")
+BDS_KPI_08_C40_TEXT <- content(BDS_KPI_08_C40, "text")
+BDS_KPI_08_C40_JSON <- fromJSON(BDS_KPI_08_C40_TEXT,flatten = TRUE)
+BDS_KPI_08_C40_DF <- as.data.frame(BDS_KPI_08_C40_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez)
+
+COL_NAMES_KPI08_c40 <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_08_C40_DF) <- COL_NAMES_KPI08_c40
+
+##########
+
+BDS_KPI_08_C100 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_08_C100")
+BDS_KPI_08_C100_TEXT <- content(BDS_KPI_08_C100, "text")
+BDS_KPI_08_C100_JSON <- fromJSON(BDS_KPI_08_C100_TEXT,flatten = TRUE)
+BDS_KPI_08_C100_DF <- as.data.frame(BDS_KPI_08_C100_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez)
+
+COL_NAMES_KPI08_c100 <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_08_C100_DF) <- COL_NAMES_KPI08_c100
+
+##########
+#UNIÃO DO KPI08 C40COM C100
+
+#bind_cols() é usado para unir colunas de df diferentes
+
+BDS_KPI08_C40_C100 <- bind_cols(BDS_KPI_08_C40_DF$ANO,
+                                BDS_KPI_08_C40_DF$REGIONAL,
+                                BDS_KPI_08_C40_DF$AERO,
+                                BDS_KPI_08_C40_DF$PONTUALIDADE_ANO,
+                                BDS_KPI_08_C100_DF$PONTUALIDADE_ANO)
+
+COL_NAMES_KPI08_c40_c100 <- c("ANO","REGIONAL","AERO", "PONTUALIDADE_ANO_C40",
+                              "PONTUALIDADE_ANO_C100")
+
+colnames(BDS_KPI08_C40_C100) <- COL_NAMES_KPI08_c40_c100
+#########################################################
+#BDS KPI 08 POR REGIONAL
+
+BDS_KPI_08_C40_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_08_C40&regional=s")
+BDS_KPI_08_C40_REGIONAL_TEXT <- content(BDS_KPI_08_C40_REGIONAL, "text")
+BDS_KPI_08_C40_REGIONAL_JSON <- fromJSON(BDS_KPI_08_C40_REGIONAL_TEXT,flatten = TRUE)
+BDS_KPI_08_C40_REGIONAL_DF <- as.data.frame(BDS_KPI_08_C40_REGIONAL_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez)
+
+COL_NAMES_KPI08_c40_REGIONAL <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_08_C40_REGIONAL_DF) <- COL_NAMES_KPI08_c40_REGIONAL
+################
+BDS_KPI_08_C100_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_08_C100&regional=s")
+BDS_KPI_08_C100_REGIONAL_TEXT <- content(BDS_KPI_08_C100_REGIONAL, "text")
+BDS_KPI_08_C100_REGIONAL_JSON <- fromJSON(BDS_KPI_08_C100_REGIONAL_TEXT,flatten = TRUE)
+BDS_KPI_08_C100_REGIONAL_DF <- as.data.frame(BDS_KPI_08_C100_REGIONAL_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez)
+
+COL_NAMES_KPI08_c100_REGIONAL <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_08_C100_REGIONAL_DF) <- COL_NAMES_KPI08_c100_REGIONAL
+#########################
+#unindo o KPI 08 por REGIONAL
+
+BDS_KPI08_C40_C100_REGIONAL <- bind_cols(BDS_KPI_08_C40_REGIONAL_DF$ANO,
+                                BDS_KPI_08_C40_REGIONAL_DF$REGIONAL,
+                                BDS_KPI_08_C40_REGIONAL_DF$AERO,
+                                BDS_KPI_08_C40_REGIONAL_DF$PONTUALIDADE_ANO,
+                                BDS_KPI_08_C100_REGIONAL_DF$PONTUALIDADE_ANO)
+
+COL_NAMES_KPI08_c40_c100_REGIONAL <- c("ANO","REGIONAL","AERO", "PONTUALIDADE_ANO_C40",
+                              "PONTUALIDADE_ANO_C100")
+
+colnames(BDS_KPI08_C40_C100_REGIONAL) <- COL_NAMES_KPI08_c40_c100_REGIONAL
+BDS_KPI08_C40_C100_REGIONAL<- BDS_KPI08_C40_C100_REGIONAL %>% pivot_longer(cols = PONTUALIDADE_ANO_C40:PONTUALIDADE_ANO_C100,
+                                             names_to = "C40_100",
+                                             values_to = "ADICIONAL")
+
+
+
+#BDS_KPI08_C40_C100_REGIONAL %>% mutate("40"="40", "100"="100") %>% 
+#  unite()
+
+
+
+#########################################################
+#foi necessário criar uma BDS mensal para o KPI 08
+
+
+#algumas vezes é necessário usar O pivot_longer() para transpor colunas em linhas
+
+BDS_KPI_08_C40_MES <- BDS_KPI_08_C40_DF %>% 
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "ADICIONAL") %>% 
+  mutate("XXX"= "40") %>% 
+  unite("AERO", c("AERO","XXX"))
+
+BDS_KPI_08_C100_MES <- BDS_KPI_08_C100_DF %>% 
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "ADICIONAL")%>% 
+  mutate("XXX"= "100") %>% 
+  unite("AERO", c("AERO","XXX"))
+
+
+BDS_KPI_08_MES <- bind_rows(BDS_KPI_08_C40_MES,BDS_KPI_08_C100_MES)
+
+
+
+
+
+
+
+
+
+##########
+
+BDS_KPI_09 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_09")
+BDS_KPI_09_TEXT <- content(BDS_KPI_09, "text")
+BDS_KPI_09_JSON <- fromJSON(BDS_KPI_09_TEXT,flatten = TRUE)
+BDS_KPI_09_DF <- as.data.frame(BDS_KPI_09_JSON)
+
+##########
+
+BDS_KPI_10 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_10")
+BDS_KPI_10_TEXT <- content(BDS_KPI_10, "text")
+BDS_KPI_10_JSON <- fromJSON(BDS_KPI_10_TEXT,flatten = TRUE)
+BDS_KPI_10_DF <- as.data.frame(BDS_KPI_10_JSON)
+
+##########
+
+BDS_KPI_11 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_11")
+BDS_KPI_11_TEXT <- content(BDS_KPI_11, "text")
+BDS_KPI_11_JSON <- fromJSON(BDS_KPI_11_TEXT,flatten = TRUE)
+BDS_KPI_11_DF <- as.data.frame(BDS_KPI_11_JSON)
+
+##########
+
+BDS_KPI_13 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_13")
+BDS_KPI_13_TEXT <- content(BDS_KPI_13, "text")
+BDS_KPI_13_JSON <- fromJSON(BDS_KPI_13_TEXT,flatten = TRUE)
+BDS_KPI_13_DF <- as.data.frame(BDS_KPI_13_JSON)
+
+##########
+BDS_KPI_13_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_13&regional=s")
+BDS_KPI_13_REGIONAL_TEXT <- content(BDS_KPI_13_REGIONAL, "text")
+BDS_KPI_13_REGIONAL_JSON <- fromJSON(BDS_KPI_13_REGIONAL_TEXT,flatten = TRUE)
+BDS_KPI_13_REGIONAL_DF <- as.data.frame(BDS_KPI_13_REGIONAL_JSON)
+
+##########
+
+BDS_KPI_14 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_14")
+BDS_KPI_14_TEXT <- content(BDS_KPI_14, "text")
+BDS_KPI_14_JSON <- fromJSON(BDS_KPI_14_TEXT,flatten = TRUE)
+BDS_KPI_14_DF <- as.data.frame(BDS_KPI_14_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez) %>% 
+  mutate(movimentos.percentual_ano=movimentos.percentual_ano, movimentos.jan=movimentos.jan,
+         movimentos.fev=movimentos.fev, movimentos.mar=movimentos.mar,
+         movimentos.abr=movimentos.abr, movimentos.mai=movimentos.mai,
+         movimentos.jun=movimentos.jun, movimentos.jul=movimentos.jul,
+         movimentos.ago=movimentos.ago, movimentos.set=movimentos.set,
+         movimentos.out=movimentos.out, movimentos.nov=movimentos.nov,
+         movimentos.dez=movimentos.dez)
+COL_NAMES_KPI14 <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_14_DF) <- COL_NAMES_KPI14
+
+#####
+BDS_KPI_14_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_14&regional=s")
+BDS_KPI_14_TEXT_REGIONAL <- content(BDS_KPI_14_REGIONAL, "text")
+BDS_KPI_14_JSON_REGIONAL <- fromJSON(BDS_KPI_14_TEXT_REGIONAL,flatten = TRUE)
+BDS_KPI_14_REGIONAL_DF <- as.data.frame(BDS_KPI_14_JSON_REGIONAL)
+
+
+
+####################
+
+PONT_ARR_DEP <- bind_cols(BDS_KPI_14_DF$ANO,BDS_KPI_14_DF$AERO,BDS_KPI_14_DF$PONTUALIDADE_ANO,BDS_KPI_01_DF$PONTUALIDADE_ANO)
+COL_NAMES_ARR_DEP <- c("ANO","AERO", "PONT.ARR","PONT.DEP")
+colnames(PONT_ARR_DEP) <- COL_NAMES_ARR_DEP
+
+PONT_ARR_DEP <- PONT_ARR_DEP %>% filter(ANO==2022)
+
+
+##########
+
+BDS_KPI_15 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_15")
+BDS_KPI_15_TEXT <- content(BDS_KPI_15, "text")
+BDS_KPI_15_JSON <- fromJSON(BDS_KPI_15_TEXT,flatten = TRUE)
+BDS_KPI_15_DF <- as.data.frame(BDS_KPI_15_JSON)
+
+
+#abaixo crio um df para poder fazer a variação entre o ano de 2022 e 2019
+
+VAR15_2022 <- BDS_KPI_15_DF %>% filter(movimentos.ano=="2022") %>% filter(movimentos.total_movimentos>3500)#QUANDO NECESSÁRIO É SÓ SUBSTITUIR O "2000" PELO VALOR NECESSÁRIO
+VAR15_2021 <- BDS_KPI_15_DF %>% filter(movimentos.ano=="2021") %>% filter(movimentos.fluxo%in%VAR15_2022$movimentos.fluxo)
+VAR15 <- bind_cols(VAR15_2021,VAR15_2022$movimentos.percentual_ano_70,VAR15_2022$movimentos.total_movimentos) %>% 
+  #FOI CRIADO O VAR15 PARA CRIAR O LABEL DE VARIAÇÃO 
+  transmute(ROTA=movimentos.fluxo,VAR21=movimentos.percentual_ano_70,VAR22=...24,MOVIMENTOS.21=movimentos.total_movimentos, MOVIMENTOS.22=...25 ) %>% 
+  mutate(VAR= (VAR22-VAR21)/VAR21, VAR.ANO=(MOVIMENTOS.22-MOVIMENTOS.21)/MOVIMENTOS.21)
+
+
+
+
+##########
+
+BDS_KPI_TOTAL_AZ <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBAZ")
+BDS_KPI_TOTAL_AZ_TEXT <- content(BDS_KPI_TOTAL_AZ, "text")
+BDS_KPI_TOTAL_AZ_JSON <- fromJSON(BDS_KPI_TOTAL_AZ_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_AZ_DF <- as.data.frame(BDS_KPI_TOTAL_AZ_JSON)
+
+##########
+
+BDS_KPI_TOTAL_AO <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBAO")
+BDS_KPI_TOTAL_AO_TEXT <- content(BDS_KPI_TOTAL_AO, "text")
+BDS_KPI_TOTAL_AO_JSON <- fromJSON(BDS_KPI_TOTAL_AO_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_AO_DF <- as.data.frame(BDS_KPI_TOTAL_AO_JSON)
+
+##########
+
+BDS_KPI_TOTAL_BS <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBBS")
+BDS_KPI_TOTAL_BS_TEXT <- content(BDS_KPI_TOTAL_BS, "text")
+BDS_KPI_TOTAL_BS_JSON <- fromJSON(BDS_KPI_TOTAL_BS_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_BS_DF <- as.data.frame(BDS_KPI_TOTAL_BS_JSON)
+
+##########
+
+BDS_KPI_TOTAL_CW <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBCW")
+BDS_KPI_TOTAL_CW_TEXT <- content(BDS_KPI_TOTAL_CW, "text")
+BDS_KPI_TOTAL_CW_JSON <- fromJSON(BDS_KPI_TOTAL_CW_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_CW_DF <- as.data.frame(BDS_KPI_TOTAL_CW_JSON)
+
+##########
+
+BDS_KPI_TOTAL_RE <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBRE")
+BDS_KPI_TOTAL_RE_TEXT <- content(BDS_KPI_TOTAL_RE, "text")
+BDS_KPI_TOTAL_RE_JSON <- fromJSON(BDS_KPI_TOTAL_RE_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_RE_DF <- as.data.frame(BDS_KPI_TOTAL_RE_JSON)
+
+##########
+
+BDS_KPI_TOTAL_Brasil <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=Brasil")
+BDS_KPI_TOTAL_Brasil_TEXT <- content(BDS_KPI_TOTAL_Brasil, "text")
+BDS_KPI_TOTAL_Brasil_JSON <- fromJSON(BDS_KPI_TOTAL_Brasil_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_Brasil_DF <- as.data.frame(BDS_KPI_TOTAL_Brasil_JSON)
+
+##########
+
+BDS_KPI_TOTAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total")
+BDS_KPI_TOTAL_TEXT <- content(BDS_KPI_TOTAL, "text")
+BDS_KPI_TOTAL_JSON <- fromJSON(BDS_KPI_TOTAL_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_DF <- as.data.frame(BDS_KPI_TOTAL_JSON)
+
+#########
+
+BDS_KPI_COMER <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Comercial")
+BDS_KPI_COMER_TEXT <- content(BDS_KPI_COMER, "text")
+BDS_KPI_COMER_JSON <- fromJSON(BDS_KPI_COMER_TEXT,flatten = TRUE)
+BDS_KPI_COMER_DF <- as.data.frame(BDS_KPI_COMER_JSON)
+
+##########
+
+BDS_KPI_GERAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Geral")
+BDS_KPI_GERAL_TEXT <- content(BDS_KPI_GERAL, "text")
+BDS_KPI_GERAL_JSON <- fromJSON(BDS_KPI_GERAL_TEXT,flatten = TRUE)
+BDS_KPI_GERAL_DF <- as.data.frame(BDS_KPI_GERAL_JSON)
+
+#################
+COL.NAMES.MOV <- c("ANO", "TOTAL","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+MOV_GERAL <- BDS_KPI_GERAL_DF %>% select(movimentos.ano, movimentos.total,movimentos.jan:movimentos.dez) %>% 
+  group_by(movimentos.ano) %>% summarise(movimentos.total = sum(movimentos.total),
+                                         movimentos.jan = sum(movimentos.jan),
+                                         movimentos.fev = sum(movimentos.fev),
+                                         movimentos.mar = sum(movimentos.mar),
+                                         movimentos.abr = sum(movimentos.abr),
+                                         movimentos.mai = sum(movimentos.mai),
+                                         movimenos.jun = sum(movimentos.jun),
+                                         movimentos.jul = sum(movimentos.jul),
+                                         movimentos.ago = sum(movimentos.ago),
+                                         movimentoss.set = sum(movimentos.set),
+                                         movimentos.out = sum(movimentos.out),
+                                         movimentos.nov = sum(movimentos.nov),
+                                         movimentos.dez = sum(movimentos.dez)) %>% 
+  `colnames<-`(COL.NAMES.MOV) %>% pivot_longer(cols = JAN:DEZ,
+                                               names_to = "MES",
+                                               values_to = "MOV") %>% 
+  mutate(ANO=as.factor(ANO),MES= factor(MES, levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")))
+
+
+###########
+
+BDS_KPI_MIL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Militar")
+BDS_KPI_MIL_TEXT <- content(BDS_KPI_MIL, "text")
+BDS_KPI_MIL_JSON <- fromJSON(BDS_KPI_MIL_TEXT,flatten = TRUE)
+BDS_KPI_MIL_DF <- as.data.frame(BDS_KPI_MIL_JSON)
+
+
+#########
+
+BDS_KPI_MEDIA <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Media")
+BDS_KPI_MEDIA_TEXT <- content(BDS_KPI_MEDIA, "text")
+BDS_KPI_MEDIA_JSON <- fromJSON(BDS_KPI_MEDIA_TEXT,flatten = TRUE)
+BDS_KPI_MEDIA_DF <- as.data.frame(BDS_KPI_MEDIA_JSON)
+
+######### 
+#BDS PARA MOVIMENTOS DA AVIAÇÃO COMERCIAL DOMÉSTICA (01)
+
+BDS_KPI_COMERCIAL_NAC <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Comercial-Nac")
+BDS_KPI_COMERCIAL_NAC_TEXT <- content(BDS_KPI_COMERCIAL_NAC, "text")
+BDS_KPI_COMERCIAL_NAC_JSON <- fromJSON(BDS_KPI_COMERCIAL_NAC_TEXT,flatten = TRUE)
+BDS_KPI_COMERCIAL_NAC_DF <- as.data.frame(BDS_KPI_COMERCIAL_NAC_JSON) %>% 
+  select(movimentos.ano, movimentos.total,movimentos.jan:movimentos.dez)
+COL.NAMES.MOV <- c("ANO", "TOTAL","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+colnames(BDS_KPI_COMERCIAL_NAC_DF) <- COL.NAMES.MOV
+
+#AJUSTES NA BDS PARA CRIAR O GRÁFICO PARA O ANO DE 2022
+MOV_COM_DOMESTC <- BDS_KPI_COMERCIAL_NAC_DF %>% 
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "MOV") %>% 
+  mutate(MES=factor(MES,levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")), ANO=as.character(ANO)) 
+MOV_COM_DOMESTC_2019 <- MOV_COM_DOMESTC %>% filter(ANO=="2019")
+MOV_COM_DOMESTC_2022 <- MOV_COM_DOMESTC %>% filter(ANO=="2022")
+MOV_COM_DOM <- bind_cols(MOV_COM_DOMESTC_2019,MOV_COM_DOMESTC_2022$MOV) %>% #FOI CRIADO O MOV_COM_DOM PARA CRIAR O LABEL DE VARIAÇÃO 
+  transmute(ANO=ANO,TOTAL=TOTAL,MES=MES,MOV19=MOV,MOV22=...5) %>% mutate(VAR= (MOV22-MOV19)/MOV19)
+
+
+
+
+
+
+#########
+#BDS PARA MOVIMENTOS DA AVIAÇÃO COMERCIAL INTERNACIONAL (02)
+
+BDS_KPI_COMERCIAL_INT <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Comercial-Int")
+BDS_KPI_COMERCIAL_INT_TEXT <- content(BDS_KPI_COMERCIAL_INT, "text")
+BDS_KPI_COMERCIAL_INT_JSON <- fromJSON(BDS_KPI_COMERCIAL_INT_TEXT,flatten = TRUE)
+BDS_KPI_COMERCIAL_INT_DF <- as.data.frame(BDS_KPI_COMERCIAL_INT_JSON)%>% 
+  select(movimentos.ano, movimentos.total,movimentos.jan:movimentos.dez)
+COL.NAMES.MOV <- c("ANO", "TOTAL","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+colnames(BDS_KPI_COMERCIAL_INT_DF) <- COL.NAMES.MOV
+
+#AJUSTES NA BDS PARA CRIAR O GRÁFICO PARA O ANO DE 2022
+MOV_COM_INT <- BDS_KPI_COMERCIAL_INT_DF %>%
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "MOV") %>% 
+  mutate(MES=factor(MES,levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")), ANO=as.character(ANO))
+MOV_COM_INT_2019 <- MOV_COM_INT %>% filter(ANO=="2019")
+MOV_COM_INT_2022 <- MOV_COM_INT %>% filter(ANO=="2022")
+MOV_COM_INT_VAR <- bind_cols(MOV_COM_INT_2019,MOV_COM_INT_2022$MOV) %>% 
+  transmute(ANO=ANO,TOTAL=TOTAL,MES=MES,MOV19=MOV,MOV22=...5) %>% mutate(VAR= (MOV22-MOV19)/MOV19)
+
+
+
+
+#########
+
+BDS_KPI_IDBR_06 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=IDBR_06")
+BDS_KPI_IDBR_06_TEXT <- content(BDS_KPI_IDBR_06, "text")
+BDS_KPI_IDBR_06_JSON <- fromJSON(BDS_KPI_IDBR_06_TEXT,flatten = TRUE)
+BDS_KPI_IDBR_06_DF <- as.data.frame(BDS_KPI_IDBR_06_JSON)
+
+#########
+
+BDS_KPI_MIN_ATRASO <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=MIN_ATRASO")
+BDS_KPI_MIN_ATRASO_TEXT <- content(BDS_KPI_MIN_ATRASO, "text")
+BDS_KPI_MIN_ATRASO_JSON <- fromJSON(BDS_KPI_MIN_ATRASO_TEXT,flatten = TRUE)
+BDS_KPI_MIN_ATRASO_DF <- as.data.frame(BDS_KPI_MIN_ATRASO_JSON)
+
+#########
+
+BDS_KPI_DENSIDADE <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=DENSIDADE")
+BDS_KPI_DENSIDADE_TEXT <- content(BDS_KPI_DENSIDADE, "text")
+BDS_KPI_DENSIDADE_JSON <- fromJSON(BDS_KPI_DENSIDADE_TEXT,flatten = TRUE)
+BDS_KPI_DENSIDADE_DF <- as.data.frame(BDS_KPI_DENSIDADE_JSON)
+
+
+#####################################################################################################################################################
+
+#criação do conjunto de cores para os gráficos
+
+cores <- c("#B0C4DE",
+           "#708090",
+           "#4682B4",
+           "#191970")
+
+#######################################
+#UNIÃO DAS BDS TOTAL(POR FIR) PARA CIAÇÃO DO GRÁFICO "TOTAL DE MOVIMENTOS SISCEAB E POR FIR" (03)
+
+
+TOTAL_MOV_SISC_FIR <- bind_rows(BDS_KPI_TOTAL_Brasil_DF, 
+                                BDS_KPI_TOTAL_BS_DF, 
+                                BDS_KPI_TOTAL_CW_DF, 
+                                BDS_KPI_TOTAL_RE_DF, 
+                                BDS_KPI_TOTAL_AZ_DF, 
+                                BDS_KPI_TOTAL_AO_DF) %>% 
+  select(movimentos.fir, movimentos.ano, movimentos.total) %>%
+  filter(movimentos.ano!='2018')
+
+#MUDANDO O NOME DAS COLUNAS
+COL.NAMES.TOTAL <- c("FIR","ANO", "TOTAL") 
+colnames(TOTAL_MOV_SISC_FIR) <- COL.NAMES.TOTAL
+
+#AJUSTES NA BDS PARA CRIAR O GRÁFICO
+#case_when() substitui o nome dos itens
+
+TOTAL_MOV_SISC_FIR <- TOTAL_MOV_SISC_FIR %>%
+mutate(FIR = case_when(FIR == "BRASIL" ~ "SISCEAB",
+                         FIR == "SBBS" ~ "FIR Brasília",
+                         FIR == "SBCW" ~ "FIR Curitiba",
+                         FIR == "SBRE" ~ "FIR Recife",
+                         FIR == "SBAZ" ~ "FIR Amazônica",
+                         FIR == "SBAO" ~ "FIR Atlântico"), ANO=as.character(ANO)) %>%
+  mutate(FIR= factor(FIR))
+
+
+###
+#BDS PARA MOVIMENTOS MENSAL POR FIR
+#bind_rows()cola linhas de df diferentes
+#transmute()cria ou modifica colunas e exclui as colunas que não foram usadas, diferente do mutate que mantem todas as #colunas
+
+VAR_MES_FIR <- bind_rows(BDS_KPI_TOTAL_Brasil_DF, 
+          BDS_KPI_TOTAL_BS_DF, 
+          BDS_KPI_TOTAL_CW_DF, 
+          BDS_KPI_TOTAL_RE_DF, 
+          BDS_KPI_TOTAL_AZ_DF, 
+          BDS_KPI_TOTAL_AO_DF) %>% 
+  transmute(FIR=movimentos.fir,ANO=movimentos.ano,TOTAL=movimentos.total,
+            JAN=movimentos.jan,
+            FEV=movimentos.fev,
+            MAR=movimentos.mar,
+            ABR=movimentos.abr,
+            MAI=movimentos.mai,
+            JUN=movimentos.jun,
+            JUL=movimentos.jul,
+            AGO=movimentos.ago,
+            SET=movimentos.set,
+            OUT=movimentos.out,
+            NOV=movimentos.nov,
+            DEZ=movimentos.dez) %>% 
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "MOV") %>% 
+  mutate(MES=factor(MES,levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"))) %>% 
+  mutate(FIR = case_when(FIR == "BRASIL" ~ "SISCEAB",
+                         FIR == "SBBS" ~ "FIR Brasília",
+                         FIR == "SBCW" ~ "FIR Curitiba",
+                         FIR == "SBRE" ~ "FIR Recife",
+                         FIR == "SBAZ" ~ "FIR Amazônica",
+                         FIR == "SBAO" ~ "FIR Atlântico"), ANO=as.character(ANO)) %>%
+  mutate(FIR= factor(FIR, levels = c("FIR Brasília","FIR Curitiba","FIR Recife","FIR Amazônica","FIR Atlântico","SISCEAB")))
+  
+
+#########################################
+
+#BDS PARA CRIAÇÃO DO GRÁFICO DE MOVIMENTOS DO ANO POR MES SISCEAB (04)
+
+
+TOTAL_MOV_MES_SISCEAB <- BDS_KPI_TOTAL_Brasil_DF %>%
+  select(movimentos.ano,movimentos.total:movimentos.dez) %>% 
+  filter(movimentos.ano!='2018')
+colnames(TOTAL_MOV_MES_SISCEAB) <- COL.NAMES.MOV
+
+#AJUSTES NA BDS PARA CRIAR O GRÁFICO
+TOTAL_MES_SISCEAB <- TOTAL_MOV_MES_SISCEAB %>%
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "MOV") %>% 
+  mutate(MES=factor(MES,levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")), ANO=as.character(ANO))
+
+
+
+#########################################
+# BDS PARA CRIAÇÃO DO GRÁFICO DE DENSIDADE DO TRÁFEGO POR REGIONAL(05)
+
+BDS_DENSIDADE <- BDS_KPI_DENSIDADE_DF %>% 
+  filter(movimentos.ano == "2022") %>% 
+  separate(movimentos.chave, into = c("FIR","CHAVE"), sep = "-") %>% 
+  select(FIR, movimentos.ano,movimentos.percentual_ano, movimentos.jan:movimentos.dez) %>% 
+  mutate(FIR = case_when(FIR == "BRASIL" ~ "SISCEAB",
+                         FIR == "SBBS" ~ "CINDACTA I",
+                         FIR == "SBCW" ~ "CINDACTA II",
+                         FIR == "SBRE" ~ "CINDACTA III",
+                         FIR == "SBAZ" ~ "CINDACTA IV",
+                         FIR == "SBAO" ~ "FIR Atlântico",
+                         FIR == "CRCEA" ~ "CRCEA-SE"))
+
+COL.NAMES.DENSI <- c("FIR","ANO", "PERCENT.ANO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+colnames(BDS_DENSIDADE) <- COL.NAMES.DENSI
+
+DENSIDADE_C1 <- BDS_DENSIDADE[5,3]
+DENSIDADE_C2 <- BDS_DENSIDADE[6,3]
+DENSIDADE_C3 <- BDS_DENSIDADE[7,3]
+DENSIDADE_C4 <- BDS_DENSIDADE[4,3]
+DENSIDADE_SISCEAB <- BDS_DENSIDADE[1,3]
+DENSIDADE_CRCEA <- BDS_DENSIDADE[2,3]
+DENSIDADE_AO <- BDS_DENSIDADE[3,3]
+
+##########################################
+#LAT LONG DOS MAPAS
+
+
+
+VERTICES_SETORES_FIR_SET22 <- read_csv("data/VERTICES_RESTANTES.csv")
+
+
+
+
+VERTICES_SBCW <- read_excel("data/VERTICES_SBCW.xlsx") %>% 
+  mutate(REGIONAL= "CINDACTA II", DENSIDADE= DENSIDADE_C2)
+
+VERTICES_SBAZ <- read_excel("data/VERTICES_SBAZ.xlsx") %>% 
+  mutate(REGIONAL= "CINDACTA IV", DENSIDADE=DENSIDADE_C4)
+
+VERTICES_SBBS <- read_excel("data/VERTICES_SBBS.xlsx") %>% 
+  mutate(REGIONAL="CINDACTA I", DENSIDADE=DENSIDADE_C1)
+
+VERTICES_CRCEA_SE <- read_excel("data/VERTICES_CRCEA_SE.xlsx") %>% 
+  mutate(REGIONAL="CRCEA-SE", DENSIDADE=DENSIDADE_CRCEA)
+
+VERTICES_SBRE <- read_excel("data/VERTICES_SBRE.xlsx") %>% 
+  mutate(REGIONAL="CINDACTA III", DENSIDADE=DENSIDADE_C3)
+
+
+VERTICES_SBAO_S1 <-read_csv("data/SBAO_S1.csv")
+VERTICES_SBAO_S2 <-read_csv("data/SBAO_S2.csv")
+VERTICES_SBAO_S3 <-read_csv("data/SBAO_S3.csv")
+
+VERTICES_SBAO <- bind_rows(VERTICES_SBAO_S1,VERTICES_SBAO_S2,VERTICES_SBAO_S3)
+
+
+
+
+# JURISDICAO <- bind_rows(VERTICES_SETORES_FIR_SET22,VERTICES_SBAO)
+
+
+ JURISDICAO <- bind_rows(VERTICES_SBAZ,VERTICES_SBBS,VERTICES_SBCW,VERTICES_SBRE)
+
+
+TEXTOJURISDIÇÃO <- data.frame(X=c(-16.34,-27.29,-9.23,-5.54,-20), Y=c(-49.14,-51.41,-39.29,-59.52,-70), 
+                              VALOR=c(DENSIDADE_C1,DENSIDADE_C2,DENSIDADE_C3,DENSIDADE_C4, DENSIDADE_SISCEAB))#DF criado para gerar a legenda
+TEXTOJURISDIÇÃOCRCEA <- data.frame(X=c(-25), Y=c(-35), VALOR=c(DENSIDADE_CRCEA))
+LINHATEXTOJURISDIÇÃOCRCEA <- data.frame(x1=-35, x2= -45.45, y1=-25, y2= -23.33)  
+CORESJURISDICAO <- c("#FFD700","#007FFF","#CC0000","#215E21","#4F2F4F","#E6E8FA") #cores do mapa
+
+#############
+#BDS PARA PONTUALIDADE
+
+PBWG_BRA_punctuality_ADR3 <- read_csv("data/PBWG-BRA-punctuality_ADR3.csv")
+
+
+  BDS_PONTUALIDADE_ARR <- PBWG_BRA_punctuality_ADR3 %>% 
+    filter(PHASE =="ARR") %>% 
+    separate(DATE,into =c("ANO", "M"), sep = "-") %>%
+    group_by(APT_GROUP,APT_ICAO, ANO, PHASE) %>% 
+     summarise(`(-1e+09.-60]`=sum(`(-1e+09.-60]`),
+               `(-60.-55]`=sum(`(-60.-55]`),
+               `(-55.-50]`=sum(`(-55.-50]`),
+               `(-50.-45]`=sum(`(-50.-45]`),
+               `(-45.-40]`=sum(`(-45.-40]`),
+               `(-40.-35]`=sum(`(-40.-35]`),
+               `(-35.-30]`=sum(`(-35.-30]`),
+               `(-30.-25]`=sum(`(-30.-25]`),
+               `(-25.-20]`=sum(`(-25.-20]`),
+               `(-20.-15]`=sum(`(-20.-15]`),
+               `(-15.-10]`=sum(`(-15.-10]`),
+               `(-10.-5]`=sum(`(-10.-5]`),
+               `(-5.0]`=sum(`(-5.0]`),
+               `(0.5]`=sum(`(0.5]`),
+               `(5.10]`=sum(`(5.10]`),
+               `(10.15]`=sum(`(10.15]`),
+               `(15.20]`=sum(`(15.20]`),
+               `(20.25]`=sum(`(20.25]`),
+               `(25.30]`=sum(`(25.30]`),
+               `(30.35]`=sum(`(30.35]`),
+               `(35.40]`=sum(`(35.40]`),
+               `(40.45]`=sum(`(40.45]`),
+               `(45.50]`=sum(`(45.50]`),
+               `(50.55]`=sum(`(50.55]`),
+               `(55.60]`=sum(`(55.60]`),
+               `(60.1e+09]`=sum(`(60.1e+09]`),
+               EARLY_M15M05=sum(EARLY_M15M05),
+               EARLY_M05M00=sum(EARLY_M05M00), 
+               LATE_P00P05=sum(LATE_P00P05),
+               LATE_P05P15=sum(LATE_P05P15),
+               WITHIN_M05P05=sum(WITHIN_M05P05),
+               WITHIN_M15P15=sum(WITHIN_M15P15)) %>% 
+    mutate(SOMA=`(-1e+09.-60]`+ `(-60.-55]`+
+        `(-55.-50]`+ `(-50.-45]`+
+        `(-45.-40]`+ `(-40.-35]`+
+        `(-35.-30]`+ `(-30.-25]`+
+        `(-25.-20]`+ `(-20.-15]`+
+        `(-15.-10]`+`(-10.-5]`+
+        `(-5.0]`+`(0.5]`+
+        `(5.10]`+`(10.15]`+
+        `(15.20]`+ `(20.25]`+
+        `(25.30]`+ `(30.35]`+
+        `(35.40]`+ `(40.45]`+
+        `(45.50]`+ `(50.55]`+
+        `(55.60]`+ `(60.1e+09]`,
+      EARLY=(`(-1e+09.-60]`+ `(-60.-55]`+
+           `(-55.-50]`+ `(-50.-45]`+
+           `(-45.-40]`+ `(-40.-35]`+
+           `(-35.-30]`+ `(-30.-25]`+
+           `(-25.-20]`+ `(-20.-15]`)/SOMA,
+           EARLY_15_5=(`(-15.-10]`+`(-10.-5]`)/SOMA,
+           WITHIN_5=(`(-5.0]`+`(0.5]`)/SOMA,
+           LATE_5_15=(`(5.10]`+`(10.15]`)/SOMA,
+           LATE=(`(15.20]`+ `(20.25]`+
+           `(25.30]`+ `(30.35]`+
+           `(35.40]`+ `(40.45]`+
+           `(45.50]`+ `(50.55]`+
+           `(55.60]`+ `(60.1e+09]`)/SOMA)%>% 
+    pivot_longer(cols = EARLY:LATE
+                        , names_to = "SLOT"
+                        , values_to = "FLIGHTS") %>% 
+    mutate(SLOT= case_when(SLOT=="EARLY"~"Adiantado > 15 min",
+                           SLOT=="EARLY_15_5"~"Adiantado de -15 min a -5 min",
+                           SLOT=="WITHIN_5"~"Pontual de -5 min a +5 min",
+                           SLOT=="LATE_5_15"~"Atrasado de +5 min a +15 min",
+                           SLOT=="LATE"~"Atrasado > 15 min")) %>% 
+mutate(SLOT=factor(SLOT, levels = c("Adiantado > 15 min",
+                                    "Adiantado de -15 min a -5 min",
+                                    "Pontual de -5 min a +5 min",
+                                    "Atrasado de +5 min a +15 min",
+                                    "Atrasado > 15 min")))%>%
+    mutate(APT_ICAO=factor(APT_ICAO, levels = c("SBBR","SBCF","SBCG","SBCT","SBFI","SBFL","SBPA",
+                                      "SBFZ","SBMO","SBPS","SBRF","SBSV","SBBE","SBCY","SBEG",
+                                      "SBGL","SBGR","SBKP","SBRJ","SBSP")))
+  
+  #conjunto de cores para o gráfico de pontualidade
+  
+CORESPONT <- c("#1E90FF","#87CEFA","#FFDAB9","#FF8C00","#FF0000")
+  
+######
+  
+  BDS_PONTUALIDADE_DEP <- PBWG_BRA_punctuality_ADR3 %>% 
+  filter(PHASE =="DEP") %>% 
+  separate(DATE,into =c("ANO", "M"), sep = "-") %>%
+  group_by(APT_GROUP,APT_ICAO, ANO, PHASE) %>% 
+  summarise(`(-1e+09.-60]`=sum(`(-1e+09.-60]`),
+            `(-60.-55]`=sum(`(-60.-55]`),
+            `(-55.-50]`=sum(`(-55.-50]`),
+            `(-50.-45]`=sum(`(-50.-45]`),
+            `(-45.-40]`=sum(`(-45.-40]`),
+            `(-40.-35]`=sum(`(-40.-35]`),
+            `(-35.-30]`=sum(`(-35.-30]`),
+            `(-30.-25]`=sum(`(-30.-25]`),
+            `(-25.-20]`=sum(`(-25.-20]`),
+            `(-20.-15]`=sum(`(-20.-15]`),
+            `(-15.-10]`=sum(`(-15.-10]`),
+            `(-10.-5]`=sum(`(-10.-5]`),
+            `(-5.0]`=sum(`(-5.0]`),
+            `(0.5]`=sum(`(0.5]`),
+            `(5.10]`=sum(`(5.10]`),
+            `(10.15]`=sum(`(10.15]`),
+            `(15.20]`=sum(`(15.20]`),
+            `(20.25]`=sum(`(20.25]`),
+            `(25.30]`=sum(`(25.30]`),
+            `(30.35]`=sum(`(30.35]`),
+            `(35.40]`=sum(`(35.40]`),
+            `(40.45]`=sum(`(40.45]`),
+            `(45.50]`=sum(`(45.50]`),
+            `(50.55]`=sum(`(50.55]`),
+            `(55.60]`=sum(`(55.60]`),
+            `(60.1e+09]`=sum(`(60.1e+09]`),
+            EARLY_M15M05=sum(EARLY_M15M05),
+            EARLY_M05M00=sum(EARLY_M05M00), 
+            LATE_P00P05=sum(LATE_P00P05),
+            LATE_P05P15=sum(LATE_P05P15),
+            WITHIN_M05P05=sum(WITHIN_M05P05),
+            WITHIN_M15P15=sum(WITHIN_M15P15)) %>% 
+  mutate(SOMA=`(-1e+09.-60]`+ `(-60.-55]`+
+           `(-55.-50]`+ `(-50.-45]`+
+           `(-45.-40]`+ `(-40.-35]`+
+           `(-35.-30]`+ `(-30.-25]`+
+           `(-25.-20]`+ `(-20.-15]`+
+           `(-15.-10]`+`(-10.-5]`+
+           `(-5.0]`+`(0.5]`+
+           `(5.10]`+`(10.15]`+
+           `(15.20]`+ `(20.25]`+
+           `(25.30]`+ `(30.35]`+
+           `(35.40]`+ `(40.45]`+
+           `(45.50]`+ `(50.55]`+
+           `(55.60]`+ `(60.1e+09]`,
+         EARLY=(`(-1e+09.-60]`+ `(-60.-55]`+
+                  `(-55.-50]`+ `(-50.-45]`+
+                  `(-45.-40]`+ `(-40.-35]`+
+                  `(-35.-30]`+ `(-30.-25]`+
+                  `(-25.-20]`+ `(-20.-15]`)/SOMA,
+         EARLY_15_5=(`(-15.-10]`+`(-10.-5]`)/SOMA,
+         WITHIN_5=(`(-5.0]`+`(0.5]`)/SOMA,
+         LATE_5_15=(`(5.10]`+`(10.15]`)/SOMA,
+         LATE=(`(15.20]`+ `(20.25]`+
+                 `(25.30]`+ `(30.35]`+
+                 `(35.40]`+ `(40.45]`+
+                 `(45.50]`+ `(50.55]`+
+                 `(55.60]`+ `(60.1e+09]`)/SOMA)%>% 
+  pivot_longer(cols = EARLY:LATE
+               , names_to = "SLOT"
+               , values_to = "FLIGHTS") %>% 
+  mutate(SLOT= case_when(SLOT=="EARLY"~"Adiantado > 15 min",
+                           SLOT=="EARLY_15_5"~"Adiantado de -15 min a -5 min",
+                           SLOT=="WITHIN_5"~"Pontual de -5 min a +5 min",
+                           SLOT=="LATE_5_15"~"Atrasado de +5 min a +15 min",
+                           SLOT=="LATE"~"Atrasado > 15 min")) %>% 
+mutate(SLOT=factor(SLOT, levels = c("Adiantado > 15 min",
+                                    "Adiantado de -15 min a -5 min",
+                                    "Pontual de -5 min a +5 min",
+                                    "Atrasado de +5 min a +15 min",
+                                    "Atrasado > 15 min")))%>%
+  mutate(APT_ICAO=factor(APT_ICAO, levels = c("SBBR","SBCF","SBCG","SBCT","SBFI","SBFL","SBPA",
+                                      "SBFZ","SBMO","SBPS","SBRF","SBSV","SBBE","SBCY","SBEG",
+                                      "SBGL","SBGR","SBKP","SBRJ","SBSP")))
+
+
+
+
+###########
+#BDS ATCO
+
+EVOLUCAO_ATCO <- read_excel("data/EVOLUCAO_ATCO.xlsx") %>% 
+  pivot_longer(cols=ATCO_OPERACIONAL:ATCO_NAO_OPERACIONAL,names_to = "OPERACIONALIDADE",values_to = "QTD")
+
+
+
+#####################
+# EPLIS
+
+EPLIS <- read_excel("data/EPLIS.xlsx") %>% 
+  mutate(PCT=QTD/sum(QTD))
+
+
+BDS_KPI_TOTAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total")
+BDS_KPI_TOTAL_TEXT <- content(BDS_KPI_TOTAL, "text")
+BDS_KPI_TOTAL_JSON <- fromJSON(BDS_KPI_TOTAL_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_DF <- as.data.frame(BDS_KPI_TOTAL_JSON)
+
+
+##########################################
+BDS_KPI_COMER <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Comercial")
+BDS_KPI_COMER_TEXT <- content(BDS_KPI_COMER, "text")
+BDS_KPI_COMER_JSON <- fromJSON(BDS_KPI_COMER_TEXT,flatten = TRUE)
+BDS_KPI_COMER_DF <- as.data.frame(BDS_KPI_COMER_JSON)
+BDS.COMER <- BDS_KPI_COMER_DF %>% select(movimentos.ano, movimentos.aero: movimentos.dez) %>% 
+  mutate(TIPO= "Comercial",REGIONAL = case_when(movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBBI"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBBR"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCF"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCG"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCO"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBCT"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBCY"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBEG"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBFI"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBFL"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBFN"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBFZ"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBGL"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBGR"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBKP"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBME"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBMN"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBMO"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBMT"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBNT"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBPA"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBPS"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBSV"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBPV"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBRB"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBRF"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBRJ"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBSC"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBSJ"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBSL"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBSM"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBSP"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBYS"~"CINDACTA I"))
+
+
+BDS_KPI_GERAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Geral")
+BDS_KPI_GERAL_TEXT <- content(BDS_KPI_GERAL, "text")
+BDS_KPI_GERAL_JSON <- fromJSON(BDS_KPI_GERAL_TEXT,flatten = TRUE)
+BDS_KPI_GERAL_DF <- as.data.frame(BDS_KPI_GERAL_JSON)
+BDS.GERAL <- BDS_KPI_GERAL_DF %>% select(movimentos.ano, movimentos.aero: movimentos.dez) %>% mutate(TIPO= "Geral",REGIONAL = case_when(movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBBI"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBBR"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCF"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCG"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCO"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBCT"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBCY"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBEG"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBFI"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBFL"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBFN"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBFZ"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBGL"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBGR"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBKP"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBME"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBMN"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBMO"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBMT"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBNT"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBPA"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBPS"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBSV"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBPV"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBRB"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBRF"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBRJ"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBSC"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBSJ"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBSL"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBSM"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBSP"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBYS"~"CINDACTA I"))
+
+
+
+BDS_KPI_MIL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Militar")
+BDS_KPI_MIL_TEXT <- content(BDS_KPI_MIL, "text")
+BDS_KPI_MIL_JSON <- fromJSON(BDS_KPI_MIL_TEXT,flatten = TRUE)
+BDS_KPI_MIL_DF <- as.data.frame(BDS_KPI_MIL_JSON)
+BDS.MIL <- BDS_KPI_MIL_DF %>% select(movimentos.ano, movimentos.aero: movimentos.dez) %>% mutate(TIPO= "Militar",REGIONAL = case_when(movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBBI"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBBR"~"CINDACTA I",
+                                                                                                                      movimentos.aero=="SBCF"~"CINDACTA I",
+                                                                                                                      movimentos.aero=="SBCG"~"CINDACTA I",
+                                                                                                                      movimentos.aero=="SBCO"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBCT"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBCY"~"CINDACTA I",
+                                                                                                                      movimentos.aero=="SBEG"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBFI"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBFL"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBFN"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBFZ"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBGL"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBGR"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBKP"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBME"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBMN"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBMO"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBMT"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBNT"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBPA"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBPS"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBSV"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBPV"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBRB"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBRF"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBRJ"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBSC"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBSJ"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBSL"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBSM"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBSP"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBYS"~"CINDACTA I"))
+
+
+
+
+
+PARTICIPACAO.AERO <- bind_rows(BDS.MIL, BDS.GERAL,BDS.COMER) %>% 
+  group_by(movimentos.ano, REGIONAL, TIPO, movimentos.aero) %>% 
+  summarise(TOTAL=sum(movimentos.total),
+            JAN=sum(movimentos.jan),
+            FEV=sum(movimentos.fev),
+            MAR= sum(movimentos.mar),
+            ABR=sum(movimentos.abr),
+            MAI=sum(movimentos.mai),
+            JUN=sum(movimentos.jun),
+            JUL=sum(movimentos.jul),
+            AGO=sum(movimentos.ago),
+            SET=sum(movimentos.set),
+            OUT=sum(movimentos.out),
+            NOV=sum(movimentos.nov),
+            DEZ=sum(movimentos.dez))
+
+PARTICIPACAO.TOTAL <- bind_rows(BDS.MIL, BDS.GERAL,BDS.COMER) %>% 
+  group_by(movimentos.ano, REGIONAL, TIPO) %>% 
+  summarise(QTD=sum(movimentos.total),
+            JAN=sum(movimentos.jan),
+            FEV=sum(movimentos.fev),
+            MAR= sum(movimentos.mar),
+            ABR=sum(movimentos.abr),
+            MAI=sum(movimentos.mai),
+            JUN=sum(movimentos.jun),
+            JUL=sum(movimentos.jul),
+            AGO=sum(movimentos.ago),
+            SET=sum(movimentos.set),
+            OUT=sum(movimentos.out),
+            NOV=sum(movimentos.nov),
+            DEZ=sum(movimentos.dez)) %>% 
+  select(movimentos.ano, REGIONAL,TIPO, QTD) %>% 
+  mutate(TOTAL=sum(QTD)) %>% 
+  mutate(PRC=round(QTD/TOTAL,digits = 2))
+
+#####################################################
+
+VERTICES_TMA_BRASIL <- read_excel("data/VERTICES_TMA_BRASIL.xlsx")
+
+TMA_SBWA <- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWA")
+TMA_SBWQ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWQ")
+TMA_SBWN<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWN")
+TMA_SBWX<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWX")
+TMA_SBXK<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXK")
+TMA_SBWB<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWB")
+TMA_SBXJ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXJ")
+TMA_SBXD<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXD")
+TMA_SBWS<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWS")
+TMA_SBXE<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXE")
+TMA_SBWZ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWZ")
+TMA_SBXT<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXT")
+TMA_SBWF<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWF")
+TMA_SBXM<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXM")
+TMA_SBXA<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXA")
+TMA_SBXS<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXS")
+TMA_SBWL<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWL")
+TMA_SBWK<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWK")
+TMA_SBWR<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWR")
+TMA_SBXW<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXW")
+TMA_SBXU<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXU")
+TMA_SBWH<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWH")
+TMA_SBXR<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXR")
+TMA_SBWE<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWE")
+TMA_SBWJ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWJ")
+TMA_SBXQ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXQ")
+TMA_SBWU<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWU")
+TMA_SBXO<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXO")
+TMA_SBXG<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXG")
+TMA_SBXP<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXP")
+TMA_SBWT<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWT")
+TMA_SBXF<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXF")
+TMA_SBWP<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWP")
+TMA_SBWM<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWM")
+TMA_SBXL<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXL")
+TMA_SBWI<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWI")
+TMA_SBXN<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXN")
+TMA_SBWG<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWG")
+TMA_SBWY<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWY")
+TMA_SBWV<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWV")
+TMA_SBXB<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXB")
+
+
+
+
+
+
+
+ANO.RELATORIO <- year(Sys.Date())-1
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Introdução
 
 ## Gestão por performance
@@ -80,7 +1197,123 @@ A Erro! Autoreferência de indicador não válida. apresenta o total de voos rea
 Os meses de maior movimento em 2022 foram julho e agosto, registrando 153.915 e 150.258 voos, respectivamente. Ao final do ano, o total de operações aéreas no SISCEAB ficou 5,2% acima do total de 2019.
 
 
+```{r gf.1, ,fig.cap='Total de voos no SISCEAB',fig.align='center', echo=FALSE, warning=FALSE, message=FALSE,fig.width=15,fig.height=8}
+#GRÁFICO COMPARATIVO POR MÊS DE TOTAL DE OPERAÇÕES ARR E DEP NO SISCEAB (03)
+BDS_ANO_2019_SIS <- TOTAL_MES_SISCEAB %>% filter(ANO %in% c(2019), MES=="JAN")
+BDS_ANO_2022_SIS <- TOTAL_MES_SISCEAB %>% filter(ANO %in% c(2022), MES=="JAN")
+BDS_VAR_ANO_SIS <- bind_rows(BDS_ANO_2019_SIS,BDS_ANO_2022_SIS) %>% 
+  transmute(ANO=ANO, TOTAL=TOTAL,VAR=(BDS_ANO_2022_SIS$TOTAL-BDS_ANO_2019_SIS$TOTAL)/BDS_ANO_2019_SIS$TOTAL)
+
+GFVARANO_SIS <-  
+ggplot(BDS_VAR_ANO_SIS)+                                                                                                 
+  geom_col(aes(x=ANO, y=TOTAL, fill = ANO),width = .9, position = position_dodge(preserve = "single"))+                
+  scale_y_continuous(limits = c(0,1700000),labels = comma_format(big.mark = "."))+ 
+  scale_x_discrete(expand = expansion(add = .7))+
+  geom_richtext(aes(x=ANO, y=300000, label= format(TOTAL,big.mark="."), group=ANO),size=5.5, position = position_dodge(width = .9), angle=90)+
+  theme_classic() + 
+  theme(panel.background=element_rect(fill = "#F0F8FF")
+  ) +
+  labs(caption = "  ", x = NULL, y = NULL   
+  ) +
+  theme(legend.position = "none",
+        plot.caption = element_text(size = 28))+
+  scale_fill_manual(values =cores)
+
+
+GFVARMES_SIS <- 
+TOTAL_MES_SISCEAB %>% filter(ANO %in% c(2019, 2022)) %>%
+  ggplot()+
+  geom_col(aes(x=MES, y=MOV, fill = ANO), position = position_dodge(preserve = "single"))+
+  scale_y_continuous(limits = c(0,160000),labels = comma_format(big.mark = ".")) +
+  coord_cartesian(xlim = c(1,12.5))+
+  geom_richtext(aes(x=MES, y=32000, label = ifelse(MOV>999,format(MOV,big.mark="."),MOV) , group=ANO),size=3, position = position_dodge(width = .9), angle=90)+
+  theme_classic()+
+  theme(legend.title    = element_text(size = 8)
+        ,legend.key.size = unit(0.3, "cm")
+  ) +
+  labs( x = NULL, y = "Movimentos - total SISCEAB"
+       ,fill = "ANO") +
+  theme(legend.position = "bottom",
+        legend.title=element_blank(),
+        legend.text = element_text(size = 14),
+        axis.title.y = element_text(size = 15))+
+  scale_fill_manual(values = cores)
+
+
+
+
+ 
+TOTAL_MES_2019_SIS <- TOTAL_MES_SISCEAB %>% filter(ANO=="2019")
+TOTAL_MES_2022_SIS <- TOTAL_MES_SISCEAB %>% filter(ANO=="2022")
+TOTALMES_SIS <- bind_cols(TOTAL_MES_2019_SIS,TOTAL_MES_2022_SIS$MOV) %>% #FOI CRIADO O MOV_COM_DOM PARA CRIAR O LABEL DE VARIAÇÃO 
+  transmute(ANO=ANO,TOTAL=TOTAL,MES=MES,MOV19=MOV,MOV22=...5) %>% mutate(VAR= (MOV22-MOV19)/MOV19)
+
+
+
+
+MOV_VAR_SIS <-    TOTALMES_SIS %>% 
+  transmute(ANO = MES,VAR=VAR) %>% 
+  mutate(ANO= factor(ANO, levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")),
+         COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0)))
+
+
+
+GFVARDOM_MES_SIS <- 
+ggplot(MOV_VAR_SIS)+
+  geom_col(aes(x = ANO, y = VAR, fill = COR), 
+           na.rm = TRUE, color = "black",width = 0.30) +
+  theme_minimal()+
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(limits=c(-.3,.3),labels = scales::label_percent(scale = 100))+
+  scale_x_discrete(breaks = NULL)+
+  coord_cartesian(xlim = c(1,12.5))+
+  guides(fill = FALSE) +
+  geom_text(aes(x = ANO, y = VAR, label=scales::percent(VAR,accuracy = 0.1),vjust = ifelse(VAR < 0, 1.25, -0.25)),size= 3)+
+  labs(title= "Mensal",x = NULL, y = "Var. 2019/2022") +
+  scale_fill_manual(values = c("firebrick", "dodgerblue4"))+
+  theme(panel.spacing = unit(1, "cm", data = NULL),
+        plot.title = element_text(size = 18,
+                                  face = "bold",
+                                  hjust = 0.5),
+        axis.title.y = element_text(size = 15))
+
+
+GFVARDOM_ANO <- 
+  ggplot(BDS_VAR_ANO_SIS %>% filter(ANO=="2022") %>% 
+           mutate(COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0))))+
+  geom_col(aes(x = ANO, y = VAR, fill = COR), 
+           na.rm = TRUE, color = "black",width = 0.30) +
+  theme_minimal()+
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(breaks=NULL,limits=c(-.3,.3),labels = scales::label_percent(scale = 100))+
+  scale_x_discrete(breaks = NULL,expand = expansion(add = 1.5))+
+  guides(fill = FALSE) +
+  geom_text(aes(x = ANO, y = VAR, label=scales::percent(VAR,accuracy = 0.1),vjust = ifelse(VAR < 0, 1.25, -0.25)),size=3)+
+  labs(title= "Anual",x = NULL, y = NULL) +
+  scale_fill_manual(values = c("dodgerblue4","firebrick"))+
+  theme(panel.spacing = unit(1, "cm", data = NULL),
+        plot.title = element_text(size = 18,
+                                  face = "bold",
+                                  hjust = 0.5))
+
+
+  grid.arrange(GFVARDOM_MES_SIS,GFVARDOM_ANO,GFVARMES_SIS,GFVARANO_SIS, ncol=2,widths=c(4,1),heights= c(1.4,4)) 
+```
+
+
+## Fontes de dados
+
+Os indicadores de performance ATM analisados neste relatório, bem como os dados de movimentos de tráfego aéreo e outras informações abordadas baseiam-se nas fontes de dados elencadas no quadro abaixo.
+
+
 <div align="center">
-![Imagem teste](imagens/gf3.png)
+![Imagem teste](imagens/fig9.jpg)
+
+Destaca-se que o Manual de Metodologia de Indicadores ATM do SISCEAB (MCA 100-22), disponível no portal AISWEB do DECEA, contém a descrição completa de cada indicador de performance ATM abordado neste documento, bem como a respectiva fonte de dados.
+
+
+É importante reforçar a informação sobre mudanças de algumas fontes de dados para determinados indicadores e informações do Relatório de Performance ATM de 2021 (edição anterior a esta), em relação aos documentos publicados em anos anteriores. Essas alterações ocorreram como resultado do aprimoramento da Subdivisão de Pós-Operações do CGNA e da Divisão de Pesquisas do Instituto de Controle do Espaço Aéreo (ICEA) na mineração, no tratamento e no armazenamento dos dados coletados das diversas fontes do SISCEAB, e contemplam os resultados publicados no Relatório de Performance ATM de 2022.
+
+
 
 
