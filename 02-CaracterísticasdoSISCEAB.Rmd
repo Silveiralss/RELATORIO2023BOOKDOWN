@@ -1,0 +1,2121 @@
+```{r setup, include=FALSE, echo=FALSE}
+
+
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+library(readr)
+library(patchwork) #pacote que soma os gráficos 
+library(leaflet)#pacote para mapas dinamicos
+library(geobr)#pacote para mapa simples
+library(readxl)
+library(sf)#pacote para mapa simples
+library(rgdal) #pacote para API
+library(httr) #pacote para API
+library(jsonlite) #pacote para API
+library(scales)
+library(ggtext)
+library(gridExtra)
+library(Rcpp)# pacote usado para corrigir um erro
+library(ggimage)#pacote para salvar os gráficos como imagem
+library(flexdashboard)
+library(ggrepel)
+library(zoo)
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+URL_BASE <- "http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area="
+
+BDS_KPI_01 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_01")
+BDS_KPI_01_TEXT <- content(BDS_KPI_01, "text")
+BDS_KPI_01_JSON <- fromJSON(BDS_KPI_01_TEXT,flatten = TRUE)
+BDS_KPI_01_DF <- as.data.frame(BDS_KPI_01_JSON) %>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez) %>% 
+  mutate(movimentos.percentual_ano=movimentos.percentual_ano, movimentos.jan=movimentos.jan,
+         movimentos.fev=movimentos.fev, movimentos.mar=movimentos.mar,
+         movimentos.abr=movimentos.abr, movimentos.mai=movimentos.mai,
+         movimentos.jun=movimentos.jun, movimentos.jul=movimentos.jul,
+         movimentos.ago=movimentos.ago, movimentos.set=movimentos.set,
+         movimentos.out=movimentos.out, movimentos.nov=movimentos.nov,
+         movimentos.dez=movimentos.dez)
+
+#uma maneira mais fácil de modificar o nome das colunas é usando o colnames()
+
+COL_NAMES_KPI01 <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_01_DF) <- COL_NAMES_KPI01
+
+######################
+
+BDS_KPI_01_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_01&regional=s")
+BDS_KPI_01_TEXT_REGIONAL <- content(BDS_KPI_01_REGIONAL, "text")
+BDS_KPI_01_JSON_REGIONAL <- fromJSON(BDS_KPI_01_TEXT_REGIONAL,flatten = TRUE)
+BDS_KPI_01_REGIONAL_DF <- as.data.frame(BDS_KPI_01_JSON_REGIONAL)
+
+
+
+
+
+
+
+########
+
+BDS_KPI_02 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_02")
+BDS_KPI_02_TEXT <- content(BDS_KPI_02, "text")
+BDS_KPI_02_JSON <- fromJSON(BDS_KPI_02_TEXT,flatten = TRUE)
+BDS_KPI_02_DF <- as.data.frame(BDS_KPI_02_JSON)
+
+########
+
+BDS_KPI_02_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_02&regional=s")
+BDS_KPI_02_REGIONAL_TEXT <- content(BDS_KPI_02_REGIONAL, "text")
+BDS_KPI_02_REGIONAL_JSON <- fromJSON(BDS_KPI_02_REGIONAL_TEXT,flatten = TRUE)
+BDS_KPI_02_REGIONAL_DF <- as.data.frame(BDS_KPI_02_REGIONAL_JSON)
+
+
+#########
+
+BDS_KPI_06 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_06")
+BDS_KPI_06_TEXT <- content(BDS_KPI_06, "text")
+BDS_KPI_06_JSON <- fromJSON(BDS_KPI_06_TEXT,flatten = TRUE)
+BDS_KPI_06_DF <- as.data.frame(BDS_KPI_06_JSON)
+
+##########
+
+
+BDS_IDBR_06_TWR <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=IDBR_06&regional=TWR")
+BDS_IDBR_06_TWR_TEXT <- content(BDS_IDBR_06_TWR, "text")
+BDS_IDBR_06_TWR_JSON <- fromJSON(BDS_IDBR_06_TWR_TEXT,flatten = TRUE)
+BDS_IDBR_06_TWR_DF <- as.data.frame(BDS_IDBR_06_TWR_JSON)
+
+############
+
+BDS_IDBR_06_APP <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=IDBR_06&regional=APP")
+BDS_IDBR_06_APP_TEXT <- content(BDS_IDBR_06_APP, "text")
+BDS_IDBR_06_APP_JSON <- fromJSON(BDS_IDBR_06_APP_TEXT,flatten = TRUE)
+BDS_IDBR_06_APP_DF <- as.data.frame(BDS_IDBR_06_APP_JSON)
+
+############
+
+BDS_IDBR_06_ACC <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=IDBR_06&regional=ACC")
+BDS_IDBR_06_ACC_TEXT <- content(BDS_IDBR_06_ACC, "text")
+BDS_IDBR_06_ACC_JSON <- fromJSON(BDS_IDBR_06_ACC_TEXT,flatten = TRUE)
+BDS_IDBR_06_ACC_DF <- as.data.frame(BDS_IDBR_06_ACC_JSON)
+
+BDS_IDBR_06_ACC_DF <- BDS_IDBR_06_ACC_DF %>% mutate(ACC = case_when(movimentos.aero == "BRASIL" ~ "SISCEAB",
+                         movimentos.aero == "SBBS" ~ "ACC Brasília",
+                         movimentos.aero == "SBCW" ~ "ACC Curitiba",
+                         movimentos.aero == "SBRE" ~ "ACC Recife",
+                         movimentos.aero == "SBAZ" ~ "ACC Amazônico",
+                         movimentos.aero == "SBAO" ~ "ACC Atlântico"))
+
+##########
+
+
+
+
+
+
+
+BDS_KPI_08_C40 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_08_C40")
+BDS_KPI_08_C40_TEXT <- content(BDS_KPI_08_C40, "text")
+BDS_KPI_08_C40_JSON <- fromJSON(BDS_KPI_08_C40_TEXT,flatten = TRUE)
+BDS_KPI_08_C40_DF <- as.data.frame(BDS_KPI_08_C40_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez)
+
+COL_NAMES_KPI08_c40 <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_08_C40_DF) <- COL_NAMES_KPI08_c40
+
+##########
+
+BDS_KPI_08_C100 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_08_C100")
+BDS_KPI_08_C100_TEXT <- content(BDS_KPI_08_C100, "text")
+BDS_KPI_08_C100_JSON <- fromJSON(BDS_KPI_08_C100_TEXT,flatten = TRUE)
+BDS_KPI_08_C100_DF <- as.data.frame(BDS_KPI_08_C100_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez)
+
+COL_NAMES_KPI08_c100 <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_08_C100_DF) <- COL_NAMES_KPI08_c100
+
+##########
+#UNIÃO DO KPI08 C40COM C100
+
+#bind_cols() é usado para unir colunas de df diferentes
+
+BDS_KPI08_C40_C100 <- bind_cols(BDS_KPI_08_C40_DF$ANO,
+                                BDS_KPI_08_C40_DF$REGIONAL,
+                                BDS_KPI_08_C40_DF$AERO,
+                                BDS_KPI_08_C40_DF$PONTUALIDADE_ANO,
+                                BDS_KPI_08_C100_DF$PONTUALIDADE_ANO)
+
+COL_NAMES_KPI08_c40_c100 <- c("ANO","REGIONAL","AERO", "PONTUALIDADE_ANO_C40",
+                              "PONTUALIDADE_ANO_C100")
+
+colnames(BDS_KPI08_C40_C100) <- COL_NAMES_KPI08_c40_c100
+#########################################################
+#BDS KPI 08 POR REGIONAL
+
+BDS_KPI_08_C40_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_08_C40&regional=s")
+BDS_KPI_08_C40_REGIONAL_TEXT <- content(BDS_KPI_08_C40_REGIONAL, "text")
+BDS_KPI_08_C40_REGIONAL_JSON <- fromJSON(BDS_KPI_08_C40_REGIONAL_TEXT,flatten = TRUE)
+BDS_KPI_08_C40_REGIONAL_DF <- as.data.frame(BDS_KPI_08_C40_REGIONAL_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez)
+
+COL_NAMES_KPI08_c40_REGIONAL <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_08_C40_REGIONAL_DF) <- COL_NAMES_KPI08_c40_REGIONAL
+################
+BDS_KPI_08_C100_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_08_C100&regional=s")
+BDS_KPI_08_C100_REGIONAL_TEXT <- content(BDS_KPI_08_C100_REGIONAL, "text")
+BDS_KPI_08_C100_REGIONAL_JSON <- fromJSON(BDS_KPI_08_C100_REGIONAL_TEXT,flatten = TRUE)
+BDS_KPI_08_C100_REGIONAL_DF <- as.data.frame(BDS_KPI_08_C100_REGIONAL_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez)
+
+COL_NAMES_KPI08_c100_REGIONAL <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_08_C100_REGIONAL_DF) <- COL_NAMES_KPI08_c100_REGIONAL
+#########################
+#unindo o KPI 08 por REGIONAL
+
+BDS_KPI08_C40_C100_REGIONAL <- bind_cols(BDS_KPI_08_C40_REGIONAL_DF$ANO,
+                                BDS_KPI_08_C40_REGIONAL_DF$REGIONAL,
+                                BDS_KPI_08_C40_REGIONAL_DF$AERO,
+                                BDS_KPI_08_C40_REGIONAL_DF$PONTUALIDADE_ANO,
+                                BDS_KPI_08_C100_REGIONAL_DF$PONTUALIDADE_ANO)
+
+COL_NAMES_KPI08_c40_c100_REGIONAL <- c("ANO","REGIONAL","AERO", "PONTUALIDADE_ANO_C40",
+                              "PONTUALIDADE_ANO_C100")
+
+colnames(BDS_KPI08_C40_C100_REGIONAL) <- COL_NAMES_KPI08_c40_c100_REGIONAL
+BDS_KPI08_C40_C100_REGIONAL<- BDS_KPI08_C40_C100_REGIONAL %>% pivot_longer(cols = PONTUALIDADE_ANO_C40:PONTUALIDADE_ANO_C100,
+                                             names_to = "C40_100",
+                                             values_to = "ADICIONAL")
+
+
+
+#BDS_KPI08_C40_C100_REGIONAL %>% mutate("40"="40", "100"="100") %>% 
+#  unite()
+
+
+
+#########################################################
+#foi necessário criar uma BDS mensal para o KPI 08
+
+
+#algumas vezes é necessário usar O pivot_longer() para transpor colunas em linhas
+
+BDS_KPI_08_C40_MES <- BDS_KPI_08_C40_DF %>% 
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "ADICIONAL") %>% 
+  mutate("XXX"= "40") %>% 
+  unite("AERO", c("AERO","XXX"))
+
+BDS_KPI_08_C100_MES <- BDS_KPI_08_C100_DF %>% 
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "ADICIONAL")%>% 
+  mutate("XXX"= "100") %>% 
+  unite("AERO", c("AERO","XXX"))
+
+
+BDS_KPI_08_MES <- bind_rows(BDS_KPI_08_C40_MES,BDS_KPI_08_C100_MES)
+
+
+
+
+
+
+
+
+
+##########
+
+BDS_KPI_09 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_09")
+BDS_KPI_09_TEXT <- content(BDS_KPI_09, "text")
+BDS_KPI_09_JSON <- fromJSON(BDS_KPI_09_TEXT,flatten = TRUE)
+BDS_KPI_09_DF <- as.data.frame(BDS_KPI_09_JSON)
+
+##########
+
+BDS_KPI_10 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_10")
+BDS_KPI_10_TEXT <- content(BDS_KPI_10, "text")
+BDS_KPI_10_JSON <- fromJSON(BDS_KPI_10_TEXT,flatten = TRUE)
+BDS_KPI_10_DF <- as.data.frame(BDS_KPI_10_JSON)
+
+##########
+
+BDS_KPI_11 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_11")
+BDS_KPI_11_TEXT <- content(BDS_KPI_11, "text")
+BDS_KPI_11_JSON <- fromJSON(BDS_KPI_11_TEXT,flatten = TRUE)
+BDS_KPI_11_DF <- as.data.frame(BDS_KPI_11_JSON)
+
+##########
+
+BDS_KPI_13 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_13")
+BDS_KPI_13_TEXT <- content(BDS_KPI_13, "text")
+BDS_KPI_13_JSON <- fromJSON(BDS_KPI_13_TEXT,flatten = TRUE)
+BDS_KPI_13_DF <- as.data.frame(BDS_KPI_13_JSON)
+
+##########
+BDS_KPI_13_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_13&regional=s")
+BDS_KPI_13_REGIONAL_TEXT <- content(BDS_KPI_13_REGIONAL, "text")
+BDS_KPI_13_REGIONAL_JSON <- fromJSON(BDS_KPI_13_REGIONAL_TEXT,flatten = TRUE)
+BDS_KPI_13_REGIONAL_DF <- as.data.frame(BDS_KPI_13_REGIONAL_JSON)
+
+##########
+
+BDS_KPI_14 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_14")
+BDS_KPI_14_TEXT <- content(BDS_KPI_14, "text")
+BDS_KPI_14_JSON <- fromJSON(BDS_KPI_14_TEXT,flatten = TRUE)
+BDS_KPI_14_DF <- as.data.frame(BDS_KPI_14_JSON)%>%
+  select(movimentos.ano,movimentos.percentual_ano, movimentos.regiao,movimentos.aero,movimentos.jan:movimentos.dez) %>% 
+  mutate(movimentos.percentual_ano=movimentos.percentual_ano, movimentos.jan=movimentos.jan,
+         movimentos.fev=movimentos.fev, movimentos.mar=movimentos.mar,
+         movimentos.abr=movimentos.abr, movimentos.mai=movimentos.mai,
+         movimentos.jun=movimentos.jun, movimentos.jul=movimentos.jul,
+         movimentos.ago=movimentos.ago, movimentos.set=movimentos.set,
+         movimentos.out=movimentos.out, movimentos.nov=movimentos.nov,
+         movimentos.dez=movimentos.dez)
+COL_NAMES_KPI14 <- c("ANO", "PONTUALIDADE_ANO","REGIONAL","AERO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+colnames(BDS_KPI_14_DF) <- COL_NAMES_KPI14
+
+#####
+BDS_KPI_14_REGIONAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_14&regional=s")
+BDS_KPI_14_TEXT_REGIONAL <- content(BDS_KPI_14_REGIONAL, "text")
+BDS_KPI_14_JSON_REGIONAL <- fromJSON(BDS_KPI_14_TEXT_REGIONAL,flatten = TRUE)
+BDS_KPI_14_REGIONAL_DF <- as.data.frame(BDS_KPI_14_JSON_REGIONAL)
+
+
+
+####################
+
+PONT_ARR_DEP <- bind_cols(BDS_KPI_14_DF$ANO,BDS_KPI_14_DF$AERO,BDS_KPI_14_DF$PONTUALIDADE_ANO,BDS_KPI_01_DF$PONTUALIDADE_ANO)
+COL_NAMES_ARR_DEP <- c("ANO","AERO", "PONT.ARR","PONT.DEP")
+colnames(PONT_ARR_DEP) <- COL_NAMES_ARR_DEP
+
+PONT_ARR_DEP <- PONT_ARR_DEP %>% filter(ANO==2022)
+
+
+##########
+
+BDS_KPI_15 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=KPI_15")
+BDS_KPI_15_TEXT <- content(BDS_KPI_15, "text")
+BDS_KPI_15_JSON <- fromJSON(BDS_KPI_15_TEXT,flatten = TRUE)
+BDS_KPI_15_DF <- as.data.frame(BDS_KPI_15_JSON)
+
+
+#abaixo crio um df para poder fazer a variação entre o ano de 2022 e 2019
+
+VAR15_2022 <- BDS_KPI_15_DF %>% filter(movimentos.ano=="2022") %>% filter(movimentos.total_movimentos>3500)#QUANDO NECESSÁRIO É SÓ SUBSTITUIR O "2000" PELO VALOR NECESSÁRIO
+VAR15_2021 <- BDS_KPI_15_DF %>% filter(movimentos.ano=="2021") %>% filter(movimentos.fluxo%in%VAR15_2022$movimentos.fluxo)
+VAR15 <- bind_cols(VAR15_2021,VAR15_2022$movimentos.percentual_ano_70,VAR15_2022$movimentos.total_movimentos) %>% 
+  #FOI CRIADO O VAR15 PARA CRIAR O LABEL DE VARIAÇÃO 
+  transmute(ROTA=movimentos.fluxo,VAR21=movimentos.percentual_ano_70,VAR22=...24,MOVIMENTOS.21=movimentos.total_movimentos, MOVIMENTOS.22=...25 ) %>% 
+  mutate(VAR= (VAR22-VAR21)/VAR21, VAR.ANO=(MOVIMENTOS.22-MOVIMENTOS.21)/MOVIMENTOS.21)
+
+
+
+
+##########
+
+BDS_KPI_TOTAL_AZ <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBAZ")
+BDS_KPI_TOTAL_AZ_TEXT <- content(BDS_KPI_TOTAL_AZ, "text")
+BDS_KPI_TOTAL_AZ_JSON <- fromJSON(BDS_KPI_TOTAL_AZ_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_AZ_DF <- as.data.frame(BDS_KPI_TOTAL_AZ_JSON)
+
+##########
+
+BDS_KPI_TOTAL_AO <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBAO")
+BDS_KPI_TOTAL_AO_TEXT <- content(BDS_KPI_TOTAL_AO, "text")
+BDS_KPI_TOTAL_AO_JSON <- fromJSON(BDS_KPI_TOTAL_AO_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_AO_DF <- as.data.frame(BDS_KPI_TOTAL_AO_JSON)
+
+##########
+
+BDS_KPI_TOTAL_BS <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBBS")
+BDS_KPI_TOTAL_BS_TEXT <- content(BDS_KPI_TOTAL_BS, "text")
+BDS_KPI_TOTAL_BS_JSON <- fromJSON(BDS_KPI_TOTAL_BS_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_BS_DF <- as.data.frame(BDS_KPI_TOTAL_BS_JSON)
+
+##########
+
+BDS_KPI_TOTAL_CW <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBCW")
+BDS_KPI_TOTAL_CW_TEXT <- content(BDS_KPI_TOTAL_CW, "text")
+BDS_KPI_TOTAL_CW_JSON <- fromJSON(BDS_KPI_TOTAL_CW_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_CW_DF <- as.data.frame(BDS_KPI_TOTAL_CW_JSON)
+
+##########
+
+BDS_KPI_TOTAL_RE <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=SBRE")
+BDS_KPI_TOTAL_RE_TEXT <- content(BDS_KPI_TOTAL_RE, "text")
+BDS_KPI_TOTAL_RE_JSON <- fromJSON(BDS_KPI_TOTAL_RE_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_RE_DF <- as.data.frame(BDS_KPI_TOTAL_RE_JSON)
+
+##########
+
+BDS_KPI_TOTAL_Brasil <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total&regional=Brasil")
+BDS_KPI_TOTAL_Brasil_TEXT <- content(BDS_KPI_TOTAL_Brasil, "text")
+BDS_KPI_TOTAL_Brasil_JSON <- fromJSON(BDS_KPI_TOTAL_Brasil_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_Brasil_DF <- as.data.frame(BDS_KPI_TOTAL_Brasil_JSON)
+
+##########
+
+BDS_KPI_TOTAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total")
+BDS_KPI_TOTAL_TEXT <- content(BDS_KPI_TOTAL, "text")
+BDS_KPI_TOTAL_JSON <- fromJSON(BDS_KPI_TOTAL_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_DF <- as.data.frame(BDS_KPI_TOTAL_JSON)
+
+#########
+
+BDS_KPI_COMER <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Comercial")
+BDS_KPI_COMER_TEXT <- content(BDS_KPI_COMER, "text")
+BDS_KPI_COMER_JSON <- fromJSON(BDS_KPI_COMER_TEXT,flatten = TRUE)
+BDS_KPI_COMER_DF <- as.data.frame(BDS_KPI_COMER_JSON)
+
+##########
+
+BDS_KPI_GERAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Geral")
+BDS_KPI_GERAL_TEXT <- content(BDS_KPI_GERAL, "text")
+BDS_KPI_GERAL_JSON <- fromJSON(BDS_KPI_GERAL_TEXT,flatten = TRUE)
+BDS_KPI_GERAL_DF <- as.data.frame(BDS_KPI_GERAL_JSON)
+
+#################
+COL.NAMES.MOV <- c("ANO", "TOTAL","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+MOV_GERAL <- BDS_KPI_GERAL_DF %>% select(movimentos.ano, movimentos.total,movimentos.jan:movimentos.dez) %>% 
+  group_by(movimentos.ano) %>% summarise(movimentos.total = sum(movimentos.total),
+                                         movimentos.jan = sum(movimentos.jan),
+                                         movimentos.fev = sum(movimentos.fev),
+                                         movimentos.mar = sum(movimentos.mar),
+                                         movimentos.abr = sum(movimentos.abr),
+                                         movimentos.mai = sum(movimentos.mai),
+                                         movimenos.jun = sum(movimentos.jun),
+                                         movimentos.jul = sum(movimentos.jul),
+                                         movimentos.ago = sum(movimentos.ago),
+                                         movimentoss.set = sum(movimentos.set),
+                                         movimentos.out = sum(movimentos.out),
+                                         movimentos.nov = sum(movimentos.nov),
+                                         movimentos.dez = sum(movimentos.dez)) %>% 
+  `colnames<-`(COL.NAMES.MOV) %>% pivot_longer(cols = JAN:DEZ,
+                                               names_to = "MES",
+                                               values_to = "MOV") %>% 
+  mutate(ANO=as.factor(ANO),MES= factor(MES, levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")))
+
+
+###########
+
+BDS_KPI_MIL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Militar")
+BDS_KPI_MIL_TEXT <- content(BDS_KPI_MIL, "text")
+BDS_KPI_MIL_JSON <- fromJSON(BDS_KPI_MIL_TEXT,flatten = TRUE)
+BDS_KPI_MIL_DF <- as.data.frame(BDS_KPI_MIL_JSON)
+
+
+#########
+
+BDS_KPI_MEDIA <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Media")
+BDS_KPI_MEDIA_TEXT <- content(BDS_KPI_MEDIA, "text")
+BDS_KPI_MEDIA_JSON <- fromJSON(BDS_KPI_MEDIA_TEXT,flatten = TRUE)
+BDS_KPI_MEDIA_DF <- as.data.frame(BDS_KPI_MEDIA_JSON)
+
+######### 
+#BDS PARA MOVIMENTOS DA AVIAÇÃO COMERCIAL DOMÉSTICA (01)
+
+BDS_KPI_COMERCIAL_NAC <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Comercial-Nac")
+BDS_KPI_COMERCIAL_NAC_TEXT <- content(BDS_KPI_COMERCIAL_NAC, "text")
+BDS_KPI_COMERCIAL_NAC_JSON <- fromJSON(BDS_KPI_COMERCIAL_NAC_TEXT,flatten = TRUE)
+BDS_KPI_COMERCIAL_NAC_DF <- as.data.frame(BDS_KPI_COMERCIAL_NAC_JSON) %>% 
+  select(movimentos.ano, movimentos.total,movimentos.jan:movimentos.dez)
+COL.NAMES.MOV <- c("ANO", "TOTAL","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+colnames(BDS_KPI_COMERCIAL_NAC_DF) <- COL.NAMES.MOV
+
+#AJUSTES NA BDS PARA CRIAR O GRÁFICO PARA O ANO DE 2022
+MOV_COM_DOMESTC <- BDS_KPI_COMERCIAL_NAC_DF %>% 
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "MOV") %>% 
+  mutate(MES=factor(MES,levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")), ANO=as.character(ANO)) 
+MOV_COM_DOMESTC_2019 <- MOV_COM_DOMESTC %>% filter(ANO=="2019")
+MOV_COM_DOMESTC_2022 <- MOV_COM_DOMESTC %>% filter(ANO=="2022")
+MOV_COM_DOM <- bind_cols(MOV_COM_DOMESTC_2019,MOV_COM_DOMESTC_2022$MOV) %>% #FOI CRIADO O MOV_COM_DOM PARA CRIAR O LABEL DE VARIAÇÃO 
+  transmute(ANO=ANO,TOTAL=TOTAL,MES=MES,MOV19=MOV,MOV22=...5) %>% mutate(VAR= (MOV22-MOV19)/MOV19)
+
+
+
+
+
+
+#########
+#BDS PARA MOVIMENTOS DA AVIAÇÃO COMERCIAL INTERNACIONAL (02)
+
+BDS_KPI_COMERCIAL_INT <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Comercial-Int")
+BDS_KPI_COMERCIAL_INT_TEXT <- content(BDS_KPI_COMERCIAL_INT, "text")
+BDS_KPI_COMERCIAL_INT_JSON <- fromJSON(BDS_KPI_COMERCIAL_INT_TEXT,flatten = TRUE)
+BDS_KPI_COMERCIAL_INT_DF <- as.data.frame(BDS_KPI_COMERCIAL_INT_JSON)%>% 
+  select(movimentos.ano, movimentos.total,movimentos.jan:movimentos.dez)
+COL.NAMES.MOV <- c("ANO", "TOTAL","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+colnames(BDS_KPI_COMERCIAL_INT_DF) <- COL.NAMES.MOV
+
+#AJUSTES NA BDS PARA CRIAR O GRÁFICO PARA O ANO DE 2022
+MOV_COM_INT <- BDS_KPI_COMERCIAL_INT_DF %>%
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "MOV") %>% 
+  mutate(MES=factor(MES,levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")), ANO=as.character(ANO))
+MOV_COM_INT_2019 <- MOV_COM_INT %>% filter(ANO=="2019")
+MOV_COM_INT_2022 <- MOV_COM_INT %>% filter(ANO=="2022")
+MOV_COM_INT_VAR <- bind_cols(MOV_COM_INT_2019,MOV_COM_INT_2022$MOV) %>% 
+  transmute(ANO=ANO,TOTAL=TOTAL,MES=MES,MOV19=MOV,MOV22=...5) %>% mutate(VAR= (MOV22-MOV19)/MOV19)
+
+
+
+
+#########
+
+BDS_KPI_IDBR_06 <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=IDBR_06")
+BDS_KPI_IDBR_06_TEXT <- content(BDS_KPI_IDBR_06, "text")
+BDS_KPI_IDBR_06_JSON <- fromJSON(BDS_KPI_IDBR_06_TEXT,flatten = TRUE)
+BDS_KPI_IDBR_06_DF <- as.data.frame(BDS_KPI_IDBR_06_JSON)
+
+#########
+
+BDS_KPI_MIN_ATRASO <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=MIN_ATRASO")
+BDS_KPI_MIN_ATRASO_TEXT <- content(BDS_KPI_MIN_ATRASO, "text")
+BDS_KPI_MIN_ATRASO_JSON <- fromJSON(BDS_KPI_MIN_ATRASO_TEXT,flatten = TRUE)
+BDS_KPI_MIN_ATRASO_DF <- as.data.frame(BDS_KPI_MIN_ATRASO_JSON)
+
+#########
+
+BDS_KPI_DENSIDADE <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=DENSIDADE")
+BDS_KPI_DENSIDADE_TEXT <- content(BDS_KPI_DENSIDADE, "text")
+BDS_KPI_DENSIDADE_JSON <- fromJSON(BDS_KPI_DENSIDADE_TEXT,flatten = TRUE)
+BDS_KPI_DENSIDADE_DF <- as.data.frame(BDS_KPI_DENSIDADE_JSON)
+
+
+#####################################################################################################################################################
+
+#criação do conjunto de cores para os gráficos
+
+cores <- c("#B0C4DE",
+           "#708090",
+           "#4682B4",
+           "#191970")
+
+#######################################
+#UNIÃO DAS BDS TOTAL(POR FIR) PARA CIAÇÃO DO GRÁFICO "TOTAL DE MOVIMENTOS SISCEAB E POR FIR" (03)
+
+
+TOTAL_MOV_SISC_FIR <- bind_rows(BDS_KPI_TOTAL_Brasil_DF, 
+                                BDS_KPI_TOTAL_BS_DF, 
+                                BDS_KPI_TOTAL_CW_DF, 
+                                BDS_KPI_TOTAL_RE_DF, 
+                                BDS_KPI_TOTAL_AZ_DF, 
+                                BDS_KPI_TOTAL_AO_DF) %>% 
+  select(movimentos.fir, movimentos.ano, movimentos.total) %>%
+  filter(movimentos.ano!='2018')
+
+#MUDANDO O NOME DAS COLUNAS
+COL.NAMES.TOTAL <- c("FIR","ANO", "TOTAL") 
+colnames(TOTAL_MOV_SISC_FIR) <- COL.NAMES.TOTAL
+
+#AJUSTES NA BDS PARA CRIAR O GRÁFICO
+#case_when() substitui o nome dos itens
+
+TOTAL_MOV_SISC_FIR <- TOTAL_MOV_SISC_FIR %>%
+mutate(FIR = case_when(FIR == "BRASIL" ~ "SISCEAB",
+                         FIR == "SBBS" ~ "FIR Brasília",
+                         FIR == "SBCW" ~ "FIR Curitiba",
+                         FIR == "SBRE" ~ "FIR Recife",
+                         FIR == "SBAZ" ~ "FIR Amazônica",
+                         FIR == "SBAO" ~ "FIR Atlântico"), ANO=as.character(ANO)) %>%
+  mutate(FIR= factor(FIR))
+
+
+###
+#BDS PARA MOVIMENTOS MENSAL POR FIR
+#bind_rows()cola linhas de df diferentes
+#transmute()cria ou modifica colunas e exclui as colunas que não foram usadas, diferente do mutate que mantem todas as #colunas
+
+VAR_MES_FIR <- bind_rows(BDS_KPI_TOTAL_Brasil_DF, 
+          BDS_KPI_TOTAL_BS_DF, 
+          BDS_KPI_TOTAL_CW_DF, 
+          BDS_KPI_TOTAL_RE_DF, 
+          BDS_KPI_TOTAL_AZ_DF, 
+          BDS_KPI_TOTAL_AO_DF) %>% 
+  transmute(FIR=movimentos.fir,ANO=movimentos.ano,TOTAL=movimentos.total,
+            JAN=movimentos.jan,
+            FEV=movimentos.fev,
+            MAR=movimentos.mar,
+            ABR=movimentos.abr,
+            MAI=movimentos.mai,
+            JUN=movimentos.jun,
+            JUL=movimentos.jul,
+            AGO=movimentos.ago,
+            SET=movimentos.set,
+            OUT=movimentos.out,
+            NOV=movimentos.nov,
+            DEZ=movimentos.dez) %>% 
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "MOV") %>% 
+  mutate(MES=factor(MES,levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"))) %>% 
+  mutate(FIR = case_when(FIR == "BRASIL" ~ "SISCEAB",
+                         FIR == "SBBS" ~ "FIR Brasília",
+                         FIR == "SBCW" ~ "FIR Curitiba",
+                         FIR == "SBRE" ~ "FIR Recife",
+                         FIR == "SBAZ" ~ "FIR Amazônica",
+                         FIR == "SBAO" ~ "FIR Atlântico"), ANO=as.character(ANO)) %>%
+  mutate(FIR= factor(FIR, levels = c("FIR Brasília","FIR Curitiba","FIR Recife","FIR Amazônica","FIR Atlântico","SISCEAB")))
+  
+
+#########################################
+
+#BDS PARA CRIAÇÃO DO GRÁFICO DE MOVIMENTOS DO ANO POR MES SISCEAB (04)
+
+
+TOTAL_MOV_MES_SISCEAB <- BDS_KPI_TOTAL_Brasil_DF %>%
+  select(movimentos.ano,movimentos.total:movimentos.dez) %>% 
+  filter(movimentos.ano!='2018')
+colnames(TOTAL_MOV_MES_SISCEAB) <- COL.NAMES.MOV
+
+#AJUSTES NA BDS PARA CRIAR O GRÁFICO
+TOTAL_MES_SISCEAB <- TOTAL_MOV_MES_SISCEAB %>%
+  pivot_longer(cols = JAN:DEZ,
+               names_to = "MES",
+               values_to = "MOV") %>% 
+  mutate(MES=factor(MES,levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")), ANO=as.character(ANO))
+
+
+
+#########################################
+# BDS PARA CRIAÇÃO DO GRÁFICO DE DENSIDADE DO TRÁFEGO POR REGIONAL(05)
+
+BDS_DENSIDADE <- BDS_KPI_DENSIDADE_DF %>% 
+  filter(movimentos.ano == "2022") %>% 
+  separate(movimentos.chave, into = c("FIR","CHAVE"), sep = "-") %>% 
+  select(FIR, movimentos.ano,movimentos.percentual_ano, movimentos.jan:movimentos.dez) %>% 
+  mutate(FIR = case_when(FIR == "BRASIL" ~ "SISCEAB",
+                         FIR == "SBBS" ~ "CINDACTA I",
+                         FIR == "SBCW" ~ "CINDACTA II",
+                         FIR == "SBRE" ~ "CINDACTA III",
+                         FIR == "SBAZ" ~ "CINDACTA IV",
+                         FIR == "SBAO" ~ "FIR Atlântico",
+                         FIR == "CRCEA" ~ "CRCEA-SE"))
+
+COL.NAMES.DENSI <- c("FIR","ANO", "PERCENT.ANO","JAN","FEV","MAR","ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+colnames(BDS_DENSIDADE) <- COL.NAMES.DENSI
+
+DENSIDADE_C1 <- BDS_DENSIDADE[5,3]
+DENSIDADE_C2 <- BDS_DENSIDADE[6,3]
+DENSIDADE_C3 <- BDS_DENSIDADE[7,3]
+DENSIDADE_C4 <- BDS_DENSIDADE[4,3]
+DENSIDADE_SISCEAB <- BDS_DENSIDADE[1,3]
+DENSIDADE_CRCEA <- BDS_DENSIDADE[2,3]
+DENSIDADE_AO <- BDS_DENSIDADE[3,3]
+
+##########################################
+#LAT LONG DOS MAPAS
+
+
+
+VERTICES_SETORES_FIR_SET22 <- read_csv("data/VERTICES_RESTANTES.csv")
+
+
+
+
+VERTICES_SBCW <- read_excel("data/VERTICES_SBCW.xlsx") %>% 
+  mutate(REGIONAL= "CINDACTA II", DENSIDADE= DENSIDADE_C2)
+
+VERTICES_SBAZ <- read_excel("data/VERTICES_SBAZ.xlsx") %>% 
+  mutate(REGIONAL= "CINDACTA IV", DENSIDADE=DENSIDADE_C4)
+
+VERTICES_SBBS <- read_excel("data/VERTICES_SBBS.xlsx") %>% 
+  mutate(REGIONAL="CINDACTA I", DENSIDADE=DENSIDADE_C1)
+
+VERTICES_CRCEA_SE <- read_excel("data/VERTICES_CRCEA_SE.xlsx") %>% 
+  mutate(REGIONAL="CRCEA-SE", DENSIDADE=DENSIDADE_CRCEA)
+
+VERTICES_SBRE <- read_excel("data/VERTICES_SBRE.xlsx") %>% 
+  mutate(REGIONAL="CINDACTA III", DENSIDADE=DENSIDADE_C3)
+
+
+VERTICES_SBAO_S1 <-read_csv("data/SBAO_S1.csv")
+VERTICES_SBAO_S2 <-read_csv("data/SBAO_S2.csv")
+VERTICES_SBAO_S3 <-read_csv("data/SBAO_S3.csv")
+
+VERTICES_SBAO <- bind_rows(VERTICES_SBAO_S1,VERTICES_SBAO_S2,VERTICES_SBAO_S3)
+
+
+
+
+# JURISDICAO <- bind_rows(VERTICES_SETORES_FIR_SET22,VERTICES_SBAO)
+
+
+ JURISDICAO <- bind_rows(VERTICES_SBAZ,VERTICES_SBBS,VERTICES_SBCW,VERTICES_SBRE)
+
+
+TEXTOJURISDIÇÃO <- data.frame(X=c(-16.34,-27.29,-9.23,-5.54,-20), Y=c(-49.14,-51.41,-39.29,-59.52,-70), 
+                              VALOR=c(DENSIDADE_C1,DENSIDADE_C2,DENSIDADE_C3,DENSIDADE_C4, DENSIDADE_SISCEAB))#DF criado para gerar a legenda
+TEXTOJURISDIÇÃOCRCEA <- data.frame(X=c(-25), Y=c(-35), VALOR=c(DENSIDADE_CRCEA))
+LINHATEXTOJURISDIÇÃOCRCEA <- data.frame(x1=-35, x2= -45.45, y1=-25, y2= -23.33)  
+CORESJURISDICAO <- c("#FFD700","#007FFF","#CC0000","#215E21","#4F2F4F","#E6E8FA") #cores do mapa
+
+#############
+#BDS PARA PONTUALIDADE
+
+PBWG_BRA_punctuality_ADR3 <- read_csv("data/PBWG-BRA-punctuality_ADR3.csv")
+
+
+  BDS_PONTUALIDADE_ARR <- PBWG_BRA_punctuality_ADR3 %>% 
+    filter(PHASE =="ARR") %>% 
+    separate(DATE,into =c("ANO", "M"), sep = "-") %>%
+    group_by(APT_GROUP,APT_ICAO, ANO, PHASE) %>% 
+     summarise(`(-1e+09.-60]`=sum(`(-1e+09.-60]`),
+               `(-60.-55]`=sum(`(-60.-55]`),
+               `(-55.-50]`=sum(`(-55.-50]`),
+               `(-50.-45]`=sum(`(-50.-45]`),
+               `(-45.-40]`=sum(`(-45.-40]`),
+               `(-40.-35]`=sum(`(-40.-35]`),
+               `(-35.-30]`=sum(`(-35.-30]`),
+               `(-30.-25]`=sum(`(-30.-25]`),
+               `(-25.-20]`=sum(`(-25.-20]`),
+               `(-20.-15]`=sum(`(-20.-15]`),
+               `(-15.-10]`=sum(`(-15.-10]`),
+               `(-10.-5]`=sum(`(-10.-5]`),
+               `(-5.0]`=sum(`(-5.0]`),
+               `(0.5]`=sum(`(0.5]`),
+               `(5.10]`=sum(`(5.10]`),
+               `(10.15]`=sum(`(10.15]`),
+               `(15.20]`=sum(`(15.20]`),
+               `(20.25]`=sum(`(20.25]`),
+               `(25.30]`=sum(`(25.30]`),
+               `(30.35]`=sum(`(30.35]`),
+               `(35.40]`=sum(`(35.40]`),
+               `(40.45]`=sum(`(40.45]`),
+               `(45.50]`=sum(`(45.50]`),
+               `(50.55]`=sum(`(50.55]`),
+               `(55.60]`=sum(`(55.60]`),
+               `(60.1e+09]`=sum(`(60.1e+09]`),
+               EARLY_M15M05=sum(EARLY_M15M05),
+               EARLY_M05M00=sum(EARLY_M05M00), 
+               LATE_P00P05=sum(LATE_P00P05),
+               LATE_P05P15=sum(LATE_P05P15),
+               WITHIN_M05P05=sum(WITHIN_M05P05),
+               WITHIN_M15P15=sum(WITHIN_M15P15)) %>% 
+    mutate(SOMA=`(-1e+09.-60]`+ `(-60.-55]`+
+        `(-55.-50]`+ `(-50.-45]`+
+        `(-45.-40]`+ `(-40.-35]`+
+        `(-35.-30]`+ `(-30.-25]`+
+        `(-25.-20]`+ `(-20.-15]`+
+        `(-15.-10]`+`(-10.-5]`+
+        `(-5.0]`+`(0.5]`+
+        `(5.10]`+`(10.15]`+
+        `(15.20]`+ `(20.25]`+
+        `(25.30]`+ `(30.35]`+
+        `(35.40]`+ `(40.45]`+
+        `(45.50]`+ `(50.55]`+
+        `(55.60]`+ `(60.1e+09]`,
+      EARLY=(`(-1e+09.-60]`+ `(-60.-55]`+
+           `(-55.-50]`+ `(-50.-45]`+
+           `(-45.-40]`+ `(-40.-35]`+
+           `(-35.-30]`+ `(-30.-25]`+
+           `(-25.-20]`+ `(-20.-15]`)/SOMA,
+           EARLY_15_5=(`(-15.-10]`+`(-10.-5]`)/SOMA,
+           WITHIN_5=(`(-5.0]`+`(0.5]`)/SOMA,
+           LATE_5_15=(`(5.10]`+`(10.15]`)/SOMA,
+           LATE=(`(15.20]`+ `(20.25]`+
+           `(25.30]`+ `(30.35]`+
+           `(35.40]`+ `(40.45]`+
+           `(45.50]`+ `(50.55]`+
+           `(55.60]`+ `(60.1e+09]`)/SOMA)%>% 
+    pivot_longer(cols = EARLY:LATE
+                        , names_to = "SLOT"
+                        , values_to = "FLIGHTS") %>% 
+    mutate(SLOT= case_when(SLOT=="EARLY"~"Adiantado > 15 min",
+                           SLOT=="EARLY_15_5"~"Adiantado de -15 min a -5 min",
+                           SLOT=="WITHIN_5"~"Pontual de -5 min a +5 min",
+                           SLOT=="LATE_5_15"~"Atrasado de +5 min a +15 min",
+                           SLOT=="LATE"~"Atrasado > 15 min")) %>% 
+mutate(SLOT=factor(SLOT, levels = c("Adiantado > 15 min",
+                                    "Adiantado de -15 min a -5 min",
+                                    "Pontual de -5 min a +5 min",
+                                    "Atrasado de +5 min a +15 min",
+                                    "Atrasado > 15 min")))%>%
+    mutate(APT_ICAO=factor(APT_ICAO, levels = c("SBBR","SBCF","SBCG","SBCT","SBFI","SBFL","SBPA",
+                                      "SBFZ","SBMO","SBPS","SBRF","SBSV","SBBE","SBCY","SBEG",
+                                      "SBGL","SBGR","SBKP","SBRJ","SBSP")))
+  
+  #conjunto de cores para o gráfico de pontualidade
+  
+CORESPONT <- c("#1E90FF","#87CEFA","#FFDAB9","#FF8C00","#FF0000")
+  
+######
+  
+  BDS_PONTUALIDADE_DEP <- PBWG_BRA_punctuality_ADR3 %>% 
+  filter(PHASE =="DEP") %>% 
+  separate(DATE,into =c("ANO", "M"), sep = "-") %>%
+  group_by(APT_GROUP,APT_ICAO, ANO, PHASE) %>% 
+  summarise(`(-1e+09.-60]`=sum(`(-1e+09.-60]`),
+            `(-60.-55]`=sum(`(-60.-55]`),
+            `(-55.-50]`=sum(`(-55.-50]`),
+            `(-50.-45]`=sum(`(-50.-45]`),
+            `(-45.-40]`=sum(`(-45.-40]`),
+            `(-40.-35]`=sum(`(-40.-35]`),
+            `(-35.-30]`=sum(`(-35.-30]`),
+            `(-30.-25]`=sum(`(-30.-25]`),
+            `(-25.-20]`=sum(`(-25.-20]`),
+            `(-20.-15]`=sum(`(-20.-15]`),
+            `(-15.-10]`=sum(`(-15.-10]`),
+            `(-10.-5]`=sum(`(-10.-5]`),
+            `(-5.0]`=sum(`(-5.0]`),
+            `(0.5]`=sum(`(0.5]`),
+            `(5.10]`=sum(`(5.10]`),
+            `(10.15]`=sum(`(10.15]`),
+            `(15.20]`=sum(`(15.20]`),
+            `(20.25]`=sum(`(20.25]`),
+            `(25.30]`=sum(`(25.30]`),
+            `(30.35]`=sum(`(30.35]`),
+            `(35.40]`=sum(`(35.40]`),
+            `(40.45]`=sum(`(40.45]`),
+            `(45.50]`=sum(`(45.50]`),
+            `(50.55]`=sum(`(50.55]`),
+            `(55.60]`=sum(`(55.60]`),
+            `(60.1e+09]`=sum(`(60.1e+09]`),
+            EARLY_M15M05=sum(EARLY_M15M05),
+            EARLY_M05M00=sum(EARLY_M05M00), 
+            LATE_P00P05=sum(LATE_P00P05),
+            LATE_P05P15=sum(LATE_P05P15),
+            WITHIN_M05P05=sum(WITHIN_M05P05),
+            WITHIN_M15P15=sum(WITHIN_M15P15)) %>% 
+  mutate(SOMA=`(-1e+09.-60]`+ `(-60.-55]`+
+           `(-55.-50]`+ `(-50.-45]`+
+           `(-45.-40]`+ `(-40.-35]`+
+           `(-35.-30]`+ `(-30.-25]`+
+           `(-25.-20]`+ `(-20.-15]`+
+           `(-15.-10]`+`(-10.-5]`+
+           `(-5.0]`+`(0.5]`+
+           `(5.10]`+`(10.15]`+
+           `(15.20]`+ `(20.25]`+
+           `(25.30]`+ `(30.35]`+
+           `(35.40]`+ `(40.45]`+
+           `(45.50]`+ `(50.55]`+
+           `(55.60]`+ `(60.1e+09]`,
+         EARLY=(`(-1e+09.-60]`+ `(-60.-55]`+
+                  `(-55.-50]`+ `(-50.-45]`+
+                  `(-45.-40]`+ `(-40.-35]`+
+                  `(-35.-30]`+ `(-30.-25]`+
+                  `(-25.-20]`+ `(-20.-15]`)/SOMA,
+         EARLY_15_5=(`(-15.-10]`+`(-10.-5]`)/SOMA,
+         WITHIN_5=(`(-5.0]`+`(0.5]`)/SOMA,
+         LATE_5_15=(`(5.10]`+`(10.15]`)/SOMA,
+         LATE=(`(15.20]`+ `(20.25]`+
+                 `(25.30]`+ `(30.35]`+
+                 `(35.40]`+ `(40.45]`+
+                 `(45.50]`+ `(50.55]`+
+                 `(55.60]`+ `(60.1e+09]`)/SOMA)%>% 
+  pivot_longer(cols = EARLY:LATE
+               , names_to = "SLOT"
+               , values_to = "FLIGHTS") %>% 
+  mutate(SLOT= case_when(SLOT=="EARLY"~"Adiantado > 15 min",
+                           SLOT=="EARLY_15_5"~"Adiantado de -15 min a -5 min",
+                           SLOT=="WITHIN_5"~"Pontual de -5 min a +5 min",
+                           SLOT=="LATE_5_15"~"Atrasado de +5 min a +15 min",
+                           SLOT=="LATE"~"Atrasado > 15 min")) %>% 
+mutate(SLOT=factor(SLOT, levels = c("Adiantado > 15 min",
+                                    "Adiantado de -15 min a -5 min",
+                                    "Pontual de -5 min a +5 min",
+                                    "Atrasado de +5 min a +15 min",
+                                    "Atrasado > 15 min")))%>%
+  mutate(APT_ICAO=factor(APT_ICAO, levels = c("SBBR","SBCF","SBCG","SBCT","SBFI","SBFL","SBPA",
+                                      "SBFZ","SBMO","SBPS","SBRF","SBSV","SBBE","SBCY","SBEG",
+                                      "SBGL","SBGR","SBKP","SBRJ","SBSP")))
+
+
+
+
+###########
+#BDS ATCO
+
+EVOLUCAO_ATCO <- read_excel("data/EVOLUCAO_ATCO.xlsx") %>% 
+  pivot_longer(cols=ATCO_OPERACIONAL:ATCO_NAO_OPERACIONAL,names_to = "OPERACIONALIDADE",values_to = "QTD")
+
+
+
+#####################
+# EPLIS
+
+EPLIS <- read_excel("data/EPLIS.xlsx") %>% 
+  mutate(PCT=QTD/sum(QTD))
+
+
+BDS_KPI_TOTAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Total")
+BDS_KPI_TOTAL_TEXT <- content(BDS_KPI_TOTAL, "text")
+BDS_KPI_TOTAL_JSON <- fromJSON(BDS_KPI_TOTAL_TEXT,flatten = TRUE)
+BDS_KPI_TOTAL_DF <- as.data.frame(BDS_KPI_TOTAL_JSON)
+
+
+##########################################
+BDS_KPI_COMER <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Comercial")
+BDS_KPI_COMER_TEXT <- content(BDS_KPI_COMER, "text")
+BDS_KPI_COMER_JSON <- fromJSON(BDS_KPI_COMER_TEXT,flatten = TRUE)
+BDS_KPI_COMER_DF <- as.data.frame(BDS_KPI_COMER_JSON)
+BDS.COMER <- BDS_KPI_COMER_DF %>% select(movimentos.ano, movimentos.aero: movimentos.dez) %>% 
+  mutate(TIPO= "Comercial",REGIONAL = case_when(movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBBI"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBBR"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCF"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCG"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCO"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBCT"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBCY"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBEG"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBFI"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBFL"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBFN"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBFZ"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBGL"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBGR"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBKP"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBME"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBMN"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBMO"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBMT"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBNT"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBPA"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBPS"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBSV"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBPV"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBRB"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBRF"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBRJ"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBSC"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBSJ"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBSL"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBSM"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBSP"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBYS"~"CINDACTA I"))
+
+
+BDS_KPI_GERAL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Geral")
+BDS_KPI_GERAL_TEXT <- content(BDS_KPI_GERAL, "text")
+BDS_KPI_GERAL_JSON <- fromJSON(BDS_KPI_GERAL_TEXT,flatten = TRUE)
+BDS_KPI_GERAL_DF <- as.data.frame(BDS_KPI_GERAL_JSON)
+BDS.GERAL <- BDS_KPI_GERAL_DF %>% select(movimentos.ano, movimentos.aero: movimentos.dez) %>% mutate(TIPO= "Geral",REGIONAL = case_when(movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBBI"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBBR"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCF"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCG"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBCO"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBCT"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBCY"~"CINDACTA I",
+                                                                                                                                      movimentos.aero=="SBEG"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBFI"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBFL"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBFN"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBFZ"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBGL"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBGR"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBKP"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBME"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBMN"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBMO"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBMT"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBNT"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBPA"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBPS"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBSV"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBPV"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBRB"~"CINDACTA IV",
+                                                                                                                                      movimentos.aero=="SBRF"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBRJ"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBSC"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBSJ"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBSL"~"CINDACTA III",
+                                                                                                                                      movimentos.aero=="SBSM"~"CINDACTA II",
+                                                                                                                                      movimentos.aero=="SBSP"~"CRCEA-SE",
+                                                                                                                                      movimentos.aero=="SBYS"~"CINDACTA I"))
+
+
+
+BDS_KPI_MIL <- GET("http://siatfm.cgna.intraer/api/performance?apiUser=silveiralss&apiToken=7a11719421134986058a25ea58a3b002e2c185d5&area=Militar")
+BDS_KPI_MIL_TEXT <- content(BDS_KPI_MIL, "text")
+BDS_KPI_MIL_JSON <- fromJSON(BDS_KPI_MIL_TEXT,flatten = TRUE)
+BDS_KPI_MIL_DF <- as.data.frame(BDS_KPI_MIL_JSON)
+BDS.MIL <- BDS_KPI_MIL_DF %>% select(movimentos.ano, movimentos.aero: movimentos.dez) %>% mutate(TIPO= "Militar",REGIONAL = case_when(movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBBI"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBBR"~"CINDACTA I",
+                                                                                                                      movimentos.aero=="SBCF"~"CINDACTA I",
+                                                                                                                      movimentos.aero=="SBCG"~"CINDACTA I",
+                                                                                                                      movimentos.aero=="SBCO"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBCT"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBCY"~"CINDACTA I",
+                                                                                                                      movimentos.aero=="SBEG"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBFI"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBFL"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBBE"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBFN"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBFZ"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBGL"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBGR"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBKP"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBME"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBMN"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBMO"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBMT"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBNT"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBPA"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBPS"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBSV"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBPV"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBRB"~"CINDACTA IV",
+                                                                                                                      movimentos.aero=="SBRF"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBRJ"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBSC"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBSJ"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBSL"~"CINDACTA III",
+                                                                                                                      movimentos.aero=="SBSM"~"CINDACTA II",
+                                                                                                                      movimentos.aero=="SBSP"~"CRCEA-SE",
+                                                                                                                      movimentos.aero=="SBYS"~"CINDACTA I"))
+
+
+
+
+
+PARTICIPACAO.AERO <- bind_rows(BDS.MIL, BDS.GERAL,BDS.COMER) %>% 
+  group_by(movimentos.ano, REGIONAL, TIPO, movimentos.aero) %>% 
+  summarise(TOTAL=sum(movimentos.total),
+            JAN=sum(movimentos.jan),
+            FEV=sum(movimentos.fev),
+            MAR= sum(movimentos.mar),
+            ABR=sum(movimentos.abr),
+            MAI=sum(movimentos.mai),
+            JUN=sum(movimentos.jun),
+            JUL=sum(movimentos.jul),
+            AGO=sum(movimentos.ago),
+            SET=sum(movimentos.set),
+            OUT=sum(movimentos.out),
+            NOV=sum(movimentos.nov),
+            DEZ=sum(movimentos.dez))
+
+PARTICIPACAO.TOTAL <- bind_rows(BDS.MIL, BDS.GERAL,BDS.COMER) %>% 
+  group_by(movimentos.ano, REGIONAL, TIPO) %>% 
+  summarise(QTD=sum(movimentos.total),
+            JAN=sum(movimentos.jan),
+            FEV=sum(movimentos.fev),
+            MAR= sum(movimentos.mar),
+            ABR=sum(movimentos.abr),
+            MAI=sum(movimentos.mai),
+            JUN=sum(movimentos.jun),
+            JUL=sum(movimentos.jul),
+            AGO=sum(movimentos.ago),
+            SET=sum(movimentos.set),
+            OUT=sum(movimentos.out),
+            NOV=sum(movimentos.nov),
+            DEZ=sum(movimentos.dez)) %>% 
+  select(movimentos.ano, REGIONAL,TIPO, QTD) %>% 
+  mutate(TOTAL=sum(QTD)) %>% 
+  mutate(PRC=round(QTD/TOTAL,digits = 2))
+
+#####################################################
+
+VERTICES_TMA_BRASIL <- read_excel("data/VERTICES_TMA_BRASIL.xlsx")
+
+TMA_SBWA <- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWA")
+TMA_SBWQ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWQ")
+TMA_SBWN<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWN")
+TMA_SBWX<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWX")
+TMA_SBXK<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXK")
+TMA_SBWB<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWB")
+TMA_SBXJ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXJ")
+TMA_SBXD<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXD")
+TMA_SBWS<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWS")
+TMA_SBXE<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXE")
+TMA_SBWZ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWZ")
+TMA_SBXT<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXT")
+TMA_SBWF<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWF")
+TMA_SBXM<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXM")
+TMA_SBXA<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXA")
+TMA_SBXS<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXS")
+TMA_SBWL<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWL")
+TMA_SBWK<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWK")
+TMA_SBWR<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWR")
+TMA_SBXW<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXW")
+TMA_SBXU<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXU")
+TMA_SBWH<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWH")
+TMA_SBXR<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXR")
+TMA_SBWE<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWE")
+TMA_SBWJ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWJ")
+TMA_SBXQ<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXQ")
+TMA_SBWU<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWU")
+TMA_SBXO<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXO")
+TMA_SBXG<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXG")
+TMA_SBXP<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXP")
+TMA_SBWT<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWT")
+TMA_SBXF<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXF")
+TMA_SBWP<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWP")
+TMA_SBWM<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWM")
+TMA_SBXL<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXL")
+TMA_SBWI<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWI")
+TMA_SBXN<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXN")
+TMA_SBWG<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWG")
+TMA_SBWY<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWY")
+TMA_SBWV<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBWV")
+TMA_SBXB<- VERTICES_TMA_BRASIL %>% dplyr::filter(ident == "SBXB")
+
+
+####################
+#bds do gráfico de média móvel 
+
+Dados_Base34_2022 <- read_excel("data/Dados_Base34_2022.xlsx", 
+                                col_types = c("date", "text", "numeric"))
+
+
+
+brasil <- read_country(year = 2020)
+glimpse(brasil)
+
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+ANO.RELATORIO <- year(Sys.Date())-1
+
+```
+
+# Características do SISCEAB
+
+O SISCEAB compreende uma área extensa, revelando características singulares entre as Organizações Regionais do DECEA em termos de:
+
+-   Organização dos Serviços de Tráfego Aéreo (ATS);
+-   Tipos de órgãos ATS;
+-   Características do sistema ATM;
+-   Perfil atual e futuro da demanda;
+-   Efetivo de Controlador de Tráfego Aéreo (ATCO);
+-   Fatores meteorológicos; e
+-   Projetos no SISCEAB.
+
+Tais particularidades são abordadas ao longo deste capítulo em face da influência que esses fatores têm nos indicadores de performance ATM.
+
+As características dos aeródromos, das TMA e das FIR, bem como suas respectivas complexidades e carga de trabalho associada, podem indicar a necessidade de alocar um efetivo maior de ATCO em determinados órgãos de controle, independentemente do tamanho da área geográfica sob sua jurisdição.
+
+
+
+
+![Imagem teste](imagens/fig10.jpg)
+
+
+
+
+A quantidade de movimentos anuais dos principais aeroportos, das TWR, dos APP e dos ACC pode ser conferida no Anuário Estatístico de Tráfego Aéreo, documento produzido pelo CGNA e disponível em <http://portal.cgna.decea.mil.br>, na aba Recursos, ou em <http://performance.decea.mil.br/> , na aba Produtos.
+
+## Organização dos Serviços de Navegação Aérea
+
+O DECEA é o órgão central do SISCEAB, responsável pela gestão do tráfego aéreo, que envolve todas as atividades relacionadas à segurança e à eficiência do controle do espaço aéreo brasileiro.
+
+O espaço aéreo sob responsabilidade do Brasil é uma área de aproximadamente 22 milhões de km2, organizada em cinco Regiões de Informação de Voo (FIR), contendo cinco Centros de Controle de Área (ACC), 42 Controles de Aproximação (APP), 57 Torres de Controle de Aeródromo (TWR), uma Torre de Controle Digital (D-TWR), 75 Rádios (AFIS) e cinco Rádios Remotas (R-AFIS).
+
+O CGNA é a organização responsável pelo serviço de Gerenciamento de Fluxo de Tráfego Aéreo (ATFM) no espaço aéreo brasileiro, aplicando medidas ATFM, quando necessário, e conduzindo o processo de tomada de decisões colaborativas com a Comunidade ATM nacional (companhias aéreas, aeroportos, órgãos de controle etc.). Além disso, também coordena a gestão do espaço aéreo, o sistema de tratamento de planos de voo, o banco de dados estatísticos, as análises de indicadores e pós-operações, bem como outras atividades relacionadas à navegação aérea.
+
+## Órgãos ATS -- ACC / APP / TWR / AFIS
+
+Os órgãos ATS prestam os Serviços de Tráfego Aéreo, que incluem os Serviços de Controle de Tráfego Aéreo, de Informação de Voo e de Alerta. Popularmente, o tema controle de tráfego aéreo é associado à figura de uma torre de controle (TWR).
+
+Entretanto, a TWR é uma das engrenagens do grande sistema que compõe o SISCEAB, no qual, também estão envolvidos órgãos de controle como os Centros de Controle de Área (ACC) e os Controles de Aproximação (APP). Adicionalmente, existem as Rádios que, por sua vez, são órgãos prestadores do Serviço de Informação de Voo de Aeródromo (AFIS) que complementam os órgãos provedores dos Serviços de Tráfego Aéreo (ATS).
+
+Cada um desses órgãos ATS possui a sua respectiva área de jurisdição, regulamentos inerentes ao serviço prestado e equipamentos adequados para o provimento de suas atribuições. O ANEXO A apresenta os Regionais e os respectivos órgãos ATS sob sua jurisdição.
+
+## Centro de Controle de Área -- ACC
+
+O ACC é um órgão de controle de tráfego aéreo encarregado de prestar os Serviços ATS às aeronaves que evoluem na Região de Informação de Voo (FIR). A FIR é uma porção do espaço aéreo com grandes dimensões em que ocorrem as fases de subida, descida, sobrevoo e cruzamento entre diferentes aeronaves, com performances distintas e em níveis de voo variados.
+
+Os ACC brasileiros trabalham ininterruptamente com equipes de controladores de tráfego aéreo, militares especialistas da Aeronáutica que se revezam em turnos específicos de serviço.
+
+Os ACC dispõem de modernas tecnologias para o provimento seguro, ordenado e rápido do tráfego aéreo. Dentre esses recursos, destacam-se:
+
+-   SAGITARIO -- Sistema Avançado de Gerenciamento de Informações de Tráfego Aéreo e Relatório de Interesse Operacional;
+-   CPDLC -- Comunicações por Enlace de Dados Controlador-Piloto; e
+-   ADS-C -- Vigilância Dependente Automática -- Contrato.
+
+## Controle de Aproximação - APP
+
+O APP é um órgão de controle de tráfego aéreo encarregado de prestar os serviços requeridos pelas aeronaves partindo e chegando nos aeroportos situados no interior de uma área de controle terminal.
+
+No Brasil, os APP contam com equipes de ATCO, compostas por militares especialistas da Aeronáutica, da Marinha do Brasil ou do Exército Brasileiro. Adicionalmente, alguns APP são integrados por profissionais civis, oriundos de outros Provedores de Serviços de Navegação Aérea (PSNA) como, por exemplo, a NAV Brasil e a INFRAERO. Mesmo com entidades externas ao Comando da Aeronáutica , todo o processo de formação de controladores bem como a gestão de licenças e habilitações é realizada pelo DECEA.
+
+Os APP brasileiros dispõem de modernas tecnologias para o provimento seguro, ordenado e rápido do tráfego aéreo. Dentre esses recursos, destacam-se:
+
+-   SAGITARIO (sistema de visualização dos dados radar);
+-   AMAN (Sistema de Gerenciamento de Chegada);
+-   SITTI (Central de áudio/telefonia integrada); e
+-   ADS-B (Vigilância Dependente Automática por Radiodifusão).
+
+## Torre de Controle de Aeródromo - TWR
+
+A TWR é um órgão de controle de tráfego aéreo situada nos aeroportos de maior movimento.
+
+De modo geral, a TWR é responsável por prestar os serviços requeridos pelas aeronaves apenas durante as fases de decolagem e pouso em um aeródromo. Incluem-se entre esses serviços o controle no solo de viaturas e pessoas na área de manobras e, quando necessário, o controle dos voos no circuito de tráfego visual do aeródromo.
+
+Da mesma forma que ocorre com os APP, as TWR do Brasil também contam com equipes de ATCO que podem ser especialistas da Aeronáutica ou profissionais de entidades externas.
+
+Adicionalmente, a incorporação de novas tecnologias ATM, como, por exemplo, o TATIC-TWR, o DCL (autorização de tráfego via enlace de dados) e o radar de solo, permitem otimizar a segurança, a eficiência e o gerenciamento em TWR de elevado fluxo de aeronaves.
+
+Alinhando recursos tecnológicos atuais com práticas inovadoras, o DECEA implementou, no aeródromo de Santa Cruz, a primeira Torre Digital (D-TWR) do SISCEAB.
+
+Na operação da D-TWR Santa Cruz, a visualização tradicional do ATCO acerca do cenário operacional foi substituída pela visualização de um sistema de vigilância, composto por câmeras de alta resolução e monitores, que proporcionam aos controladores uma visão panorâmica do aeródromo e de sua vizinhança.
+
+A primeira D-TWR brasileira foi mais um grande passo à modernização da infraestrutura aeroportuária nacional, permitindo fomentar experiências e conhecimentos para futuras aplicações nos demais aeródromos do país.
+
+Nos aeroportos cujo volume de operações aéreas é considerado baixo, não existe necessidade de instalação de uma TWR. Nesses casos, é disponibilizado o AFIS, cujo serviço é prestado por Operadores de Estação Aeronáutica.
+
+No Brasil, as estações aeronáuticas são identificadas como Rádios e prestam o Serviço de Informação de Voo de Aeródromo (AFIS) visando proporcionar informações relevantes aos aeronavegantes.
+
+Eventualmente, alguns APP ou TWR, em determinados horários e de acordo com critérios estabelecidos, podem prestar o AFIS. Isso permite modular o serviço prestado em função da demanda existente, racionalizando recursos, sem prejuízo à segurança operacional.
+
+A partir de 2016, foram viabilizados os órgãos AFIS remotos (R-AFIS) em aeroportos de baixo movimento, sendo o serviço prestado de forma remota à localidade. Atualmente, as localidades de Fernando de Noronha (na FIR-RE), Oiapoque e Vilhena (na FIR-AZ), Uruguaiana e Corumbá (na FIR-CW) operam na configuração R-AFIS.
+
+As Rádios, remotas ou não, contam com equipes de Operadores de Estação Aeronáutica, que podem ser militares ou civis, da Aeronáutica ou de outras organizações.
+
+## AFIS
+
+No Brasil, as estações aeronáuticas são identificadas como Rádios e prestam o Serviço de Informação de Voo de Aeródromo (AFIS) visando proporcionar informações relevantes aos aeronavegantes.
+
+Eventualmente, alguns APP ou TWR, em determinados horários e de acordo com critérios estabelecidos, podem prestar o AFIS. Isso permite modular o serviço prestado em função da demanda existente, racionalizando recursos, sem prejuízo à segurança operacional.
+
+A partir de 2016, foram viabilizados os órgãos AFIS remotos (R-AFIS) em aeroportos de baixo movimento, sendo o serviço prestado de forma remota à localidade. Atualmente, as localidades de Fernando de Noronha (na FIR-RE), Oiapoque e Vilhena (na FIR-AZ), Uruguaiana e Corumbá (na FIR-CW) operam na configuração R-AFIS.
+
+As Rádios, remotas ou não, contam com equipes de Operadores de Estação Aeronáutica, que podem ser militares ou civis, da Aeronáutica ou de outras organizações.
+
+## Organizações Regionais do DECEA
+
+O Quadro 5 apresenta as principais características do sistema ATM brasileiro, que permite identificar o cenário de cada Organização Regional.
+
+    
+
+![Imagem teste](imagens/fig11.jpg)
+
+**NOTA 1:** A metodologia que mede a área geográfica de cada Regional sofreu uma pequena modificação: no Relatório de 2021, se utilizou o critério da jurisdição, que excluía a área do CRCEA-SE das FIR sobrejacentes. Nesta edição, foi utilizada a delimitação geográfica de cada FIR. Assim, a área do CRCEA-SE deixa de ser agregada no cômputo geral do SISCEAB, que é igual ao somatório de suas cinco FIR.
+
+**NOTA 2:** Em 2022, houve redimensionamento das FIR Amazônica, Atlântico e Recife. Em 16 de junho, parte da FIR-AZ passou para a FIR-AO. Em 1º de dezembro de 2022, parte da FIR-AO passou para a FIR-RE.
+
+**NOTA 3:** As informações relativas aos ATCO foram extraídas do Sistema de Gestão de Pessoal Operacional (SGPO), com base nos detentores de licença de ATCO em atividade, sendo incluídos os graduados militares BCT (da ativa ou da reserva), estagiários, ATCO de Defesa Aérea, oficiais CTA e civis DACTA contabilizados em cada Regional. No efetivo total do SISCEAB e no percentual operacional, além dos ATCO já informados nos Regionais, são considerados também os militares alocados em unidades fora dos Regionais, mas não são considerados aqueles em formação na Escola de Especialistas de Aeronáutica (EEAR). Foram incluídas informações específicas sobre operadores de outras Forças, da NAVBRASIL e demais PSNA.
+
+**NOTA 4:** Em relação aos voos controlados, a quantidade de voos foi calculada por FIR/Regional, com base no número de movimentos de 1º/01/2022 a 31/12/2022 constantes no SETA Millenium, excluindo-se os movimentos repetidos nas duas bases (das localidades de origem e de destino).
+
+**NOTA 5:** Os dados descritos na NOTA 4 foram utilizados para o cálculo da densidade, em número de voos/km2. A partir daí, foi considerada a inclusão da área da FIR-AO, representada com os valores entre parênteses (0,07 para o SISCEAB e 0,03 para o CINDACTA III). Assim, os valores sem os parênteses representam a densidade do SISCEAB e do CINDACTA III desconsiderando a área da FIR-AO.
+
+**NOTA 6:** A produtividade foi calculada na grandeza de mil voos por ATCO operacional.
+
+**NOTA 7:** O share da aviação geral indica a participação deste segmento em relação ao total de movimentos.
+
+**NOTA 8:** Em relação ao número de ACC, APP, TWR e AFIS, as informações foram obtidas nas publicações AIP-Brasil, ROTAER e no Portal AISWEB, do DECEA, conforme o ANEXO A.
+
+**NOTA 9:** A quantidade de aeródromos foi contabilizada de acordo com o site de performance do DECEA. Para o cálculo do quantitativo de aeródromos sem órgãos ATS foi considerado o total de aeródromos que não possuem TWR, D-TWR, AFIS e R-AFIS.
+
+## Caracterização da demanda
+
+O objetivo geral dos serviços de tráfego aéreo é o fornecimento de um fluxo de tráfego aéreo seguro, ordenado e eficiente. Para fins de comparações operacionais, é importante ter um bom entendimento da demanda nos principais aeroportos do SISCEAB, do ranking dos aeroportos, da participação de movimentos por FIR, das rotas mais voadas pela aviação comercial, da densidade do tráfego e como a frota é composta, de acordo com a classificação das aeronaves em leve, média ou pesada.
+
+A caracterização da demanda de tráfego aéreo no Brasil é detalhada nos tópicos a seguir.
+
+    
+
+![Imagem teste](imagens/fig12.jpg)
+
+### Demanda nos principais aeroportos do SISCEAB
+
+Em 2022, a demanda nos principais aeroportos brasileiros apresentou números muito próximos ao volume de operações aéreas observado em 2019, ano de referência pré-pandemia. Nessa seção, são considerados os 34 principais aeroportos, contabilizando as respectivas operações de pouso e decolagem.
+
+Nesse sentido, a Figura 3 apresenta a média móvel semanal de pousos e decolagens realizados nos principais aeroportos do SISCEAB nos últimos anos. Em 2019, foi observada pouca variação ao longo do ano, com uma média em torno de 5.500 operações de pousos e decolagens por dia. A partir de março de 2020, observa-se uma queda significativa na média móvel em função da pandemia da COVID-19. No ano seguinte, apesar da recuperação inicial, os meses de março, abril e maio mostraram novas contrações da demanda em virtude da segunda onda da COVID-19.
+
+Ao fim do ano passado, a média móvel de operações nos principais aeroportos estava acima de 5.000 movimentos por dia, caracterizando, assim, a recuperação da demanda nacional e a retomada dos voos no cenário pós-covid (o "novo normal").
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height=3}
+
+library(readxl)
+
+Dados_Base34_2022 <- read_excel("data/Dados_Base34_2022.xlsx", 
+                                col_types = c("date", "text", "numeric"))
+
+Dados_Base34_2022 <-Dados_Base34_2022  %>%
+  mutate( ROLLSEV = rollmean(x=Total, k=7, fill = NA))
+
+Dados_Base34_2022 %>% ggplot(aes(x=Data)) +
+  #geom_point(aes(y = Total), color= "#4682B4",size=.5) +
+  geom_line(aes(y = ROLLSEV), color = "royalblue4") +
+  scale_y_continuous(limits = c(0,7000))+
+  labs( x = NULL, y = "Média móvel diária - 7 dias") +
+  theme_bw()
+
+
+
+
+```
+
+#### Aviação comercial doméstica
+
+A Erro! Autoreferência de indicador não válida. apresenta o volume de operações de pouso e decolagem nos principais aeroportos brasileiros e a variação observada ao comparar 2022 com 2019. Pode-se verificar que a demanda comercial doméstica operou acima de 90% do volume de 2019 de maio a dezembro de 2022, sendo maio o mês com o melhor desempenho (apenas 2,9% abaixo do volume de 2019).
+
+A aviação comercial doméstica nos principais aeroportos brasileiros operou com 89,8% do volume pré-pandemia (10,2% abaixo do volume de 2019).
+
+```{r gf-1, echo=FALSE, warning=FALSE, message=FALSE,fig.width=15,fig.height=8}
+#gráfico MOVIMENTO DA AVIAÇÃO COMERCIAL DOMÉSTICA (1)
+#AJUSTAR A BDS PARA REPLICAR O GRÁFICO PARA OUTROS ANOS
+
+
+BDS_VAR_2019_DOM <- MOV_COM_DOMESTC %>% filter(ANO %in% c(2019), MES=="JAN")
+BDS_VAR_2022_DOM <- MOV_COM_DOMESTC %>% filter(ANO %in% c(ANO.RELATORIO), MES=="JAN")
+BDS_VAR_ANO_DOM <- bind_rows(BDS_VAR_2019_DOM,BDS_VAR_2022_DOM) %>% 
+  transmute(ANO=ANO, TOTAL=TOTAL,VAR=(BDS_VAR_2022_DOM$TOTAL-BDS_VAR_2019_DOM$TOTAL)/BDS_VAR_2019_DOM$TOTAL)
+
+GFVARANO <-  ggplot(BDS_VAR_ANO_DOM)+                                                                                                 
+  geom_col(aes(x=ANO, y=TOTAL, fill = ANO),width = .9, position = position_dodge(preserve = "single"))+                
+  scale_y_continuous(limits = c(0,1500000),labels = comma_format(big.mark = "."))+ 
+  scale_x_discrete(expand = expansion(add = .7))+
+  geom_richtext(aes(x=ANO, y=290000, label= format(TOTAL,big.mark="."), group=ANO),size=5.5, position = position_dodge(width = .9), angle=90)+
+  theme_classic() + 
+  theme(panel.background=element_rect(fill = "#F0F8FF")
+  ) +
+  labs(caption = "  ", x = NULL, y = NULL   
+  ) +
+  theme(legend.position = "none",
+        plot.caption = element_text(size = 28))+
+  scale_fill_manual(values = cores)                 
+
+
+
+
+GFVARMES <- 
+  MOV_COM_DOMESTC %>% filter(ANO %in% c(2019, ANO.RELATORIO)) %>%
+  ggplot()+
+  geom_col(aes(x=MES, y=MOV, fill = ANO), position = position_dodge(preserve = "single"))+
+  scale_y_continuous(limits = c(0,150000),labels = comma_format(big.mark = ".")) +
+  coord_cartesian(xlim = c(1,12))+
+  geom_richtext(aes(x=MES, y=ifelse(MOV>99999,30000,28500), label = ifelse(MOV>999,format(MOV,big.mark="."),MOV), group=ANO),size=3, position = position_dodge(width = .9), angle=90)+
+    theme_classic()+
+  theme(legend.title    = element_text(size = 8) 
+        ,legend.text     = element_text(size = 14)
+        ,legend.key.size = unit(0.5, "cm")
+  ) +
+  labs(x = NULL, y = "Movimentos - aviação comercial doméstica"
+       ,fill = "ANO") +
+  theme(legend.position = "bottom",
+        legend.title=element_blank(),
+        axis.title.y = element_text(size = 15))+
+  scale_fill_manual(values = cores)
+
+
+#######################
+MOV_COM_DOM_VAR <-    MOV_COM_DOM %>% 
+  transmute(ANO = MES,VAR=VAR) %>% 
+  mutate(ANO= factor(ANO, levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")),
+         COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0)))
+
+
+  
+GFVARDOM_MES <- 
+    ggplot(MOV_COM_DOM_VAR)+
+  geom_col(aes(x = ANO, y = VAR, fill = COR), 
+           na.rm = TRUE, color = "black",width = 0.30) +
+  theme_minimal()+
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(limits=c(-.3,.3),labels = scales::label_percent(scale = 100))+
+    scale_x_discrete(breaks = NULL)+
+  coord_cartesian(xlim = c(1,12))+
+  guides(fill = FALSE) +
+    geom_text(aes(x = ANO, y = VAR, label=scales::percent(VAR,accuracy = 0.1),vjust = ifelse(VAR < 0, 1.25, -0.25)),size= 3)+
+  labs(title= "Mensal",x = NULL, y = "Var. 2019/2022") +
+  scale_fill_manual(values = c("firebrick", "dodgerblue4"))+
+    theme(panel.spacing = unit(1, "cm", data = NULL),
+          plot.title = element_text(size = 18,
+                                    face = "bold",
+                                    hjust = 0.5),
+          axis.title.y = element_text(size = 15))
+
+
+GFVARDOM_ANO <- 
+  ggplot(BDS_VAR_ANO_DOM %>% filter(ANO==ANO.RELATORIO) %>% 
+                                      mutate(COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0))))+
+  geom_col(aes(x = ANO, y = VAR, fill = COR), 
+           na.rm = TRUE, color = "black",width = 0.3) +
+  theme_minimal()+
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(breaks=NULL,limits=c(-.4,.4),labels = scales::label_percent(scale = 100))+
+  scale_x_discrete(breaks = NULL,expand = expansion(add = 1.5))+
+  guides(fill = FALSE) +
+  geom_text(aes(x = ANO, y = VAR, label=scales::percent(VAR,accuracy = 0.1),vjust = ifelse(VAR < 0, 1.25, -0.25)),size=3)+
+  labs(title= "Anual",x = NULL, y = NULL) +
+  scale_fill_manual(values = c("firebrick","dodgerblue4"))+
+  theme(panel.spacing = unit(1, "cm", data = NULL),
+        plot.title = element_text(size = 18,
+                                  face = "bold",
+                                  hjust = 0.5))
+  
+  grid.arrange(GFVARDOM_MES,GFVARDOM_ANO,GFVARMES,GFVARANO, ncol=2,widths=c(4,1),heights= c(1.4,4)) %>% 
+ggsave(filename = "imagens/gf1.png", height = 18,width=25, units = "cm")
+
+```
+
+#### Aviação comercial internacional
+
+As operações de transporte aéreo internacional, por sua vez, apresentaram recuperação superior a 80% em relação a 2019 pela primeira vez, desde o início da pandemia da COVID-19, nos últimos três meses de 2022.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE,fig.width=15,fig.height=8}
+
+#GRÁFICO MOVIMENTO AVIAÇÃO COMERCIAL INTERNACIONAL (2)
+#AJUSTAR A BDS PARA REPLICAR O GRÁFICO PARA OUTROS ANOS
+
+BDS_VAR_2019_INT <- MOV_COM_INT %>% filter(ANO %in% c(2019), MES=="JAN")
+BDS_VAR_2022_INT <- MOV_COM_INT %>% filter(ANO %in% c(ANO.RELATORIO), MES=="JAN")
+BDS_VAR_ANO_INT <- bind_rows(BDS_VAR_2019_INT,BDS_VAR_2022_INT) %>% 
+  transmute(ANO=ANO, TOTAL=TOTAL,VAR=(BDS_VAR_2022_INT$TOTAL-BDS_VAR_2019_INT$TOTAL)/BDS_VAR_2019_INT$TOTAL) 
+
+GFVARANO_INT <-  
+  ggplot(BDS_VAR_ANO_INT)+                                                                                                 
+  geom_col(aes(x=ANO, y=TOTAL, fill = ANO),width = .9, position = position_dodge(preserve = "single"))+                
+  scale_y_continuous(limits = c(0,180000),labels = comma_format(big.mark = "."))+ 
+  scale_x_discrete(expand = expansion(add = .7))+
+  geom_richtext(aes(x=ANO, y=ifelse(TOTAL>99999,32000,30000), label= format(TOTAL,big.mark="."), group=ANO),size=5.5, position = position_dodge(width = .9), angle=90)+
+  theme_classic() + 
+  theme(panel.background=element_rect(fill = "#F0F8FF")
+  ) +
+  labs(caption = "  ", x = NULL, y = NULL   
+  ) +
+  theme(legend.position = "none",
+        plot.caption = element_text(size = 34))+
+  scale_fill_manual(values = cores)
+
+
+  GFVARMES_INT <- 
+    MOV_COM_INT %>% filter(ANO %in% c(2019, ANO.RELATORIO)) %>%
+    ggplot()+
+    geom_col(aes(x=MES, y=MOV, fill = ANO), position = position_dodge(preserve = "single"))+
+    scale_y_continuous(limits = c(0,16000),labels = comma_format(big.mark = ".")) +
+    coord_cartesian(xlim = c(1,12))+
+    geom_richtext(aes(x=MES, y=ifelse(MOV>9999,3000,2800), label = ifelse(MOV>999,format(MOV,big.mark="."),MOV), group=ANO),size=3, position = position_dodge(width = .9), angle=90)+
+    theme_classic()+
+    theme(legend.title    = element_text(size = 8) 
+          ,legend.text     = element_text(size = 14)
+          ,legend.key.size = unit(0.5, "cm")
+    ) +
+    labs( x = NULL, y = "Movimentos - aviação comercial internacional"
+         ,fill = "ANO") +
+    theme(legend.position = "bottom",
+          legend.title=element_blank(),
+          axis.title.y = element_text(size = 15))+
+    scale_fill_manual(values = cores)             
+
+
+
+    MOV_COM_INT_VAR2 <-    MOV_COM_INT_VAR %>% 
+      transmute(ANO = MES,VAR=VAR) %>% 
+      mutate(ANO= factor(ANO, levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")),
+             COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0)))
+    
+    
+    
+    GFVARINT_MES <- 
+      ggplot(MOV_COM_INT_VAR2)+
+      geom_col(aes(x = ANO, y = VAR, fill = COR), 
+               na.rm = TRUE, color = "black",width = 0.30) +
+      theme_minimal()+
+      geom_hline(yintercept = 0) +
+      scale_y_continuous(limits=c(-.6,.6),labels = scales::label_percent(scale = 100))+
+      scale_x_discrete(breaks = NULL)+
+      coord_cartesian(xlim = c(1,12))+
+      guides(fill = FALSE) +
+      geom_text(aes(x = ANO, y = VAR, label=scales::percent(VAR,accuracy = 0.1),vjust = ifelse(VAR < 0, 1.25, -0.25)),size= 3)+
+      labs(title= "Mensal",x = NULL, y = "Var. 2019/2022") +
+      scale_fill_manual(values = c("firebrick", "dodgerblue4"))+
+      theme(panel.spacing = unit(1, "cm", data = NULL),
+            plot.title = element_text(size = 18,
+                                      face = "bold",
+                                      hjust = 0.5),
+            axis.title.y = element_text(size = 15))
+    
+    
+    GFVARINT_ANO <- 
+      ggplot(BDS_VAR_ANO_INT %>% filter(ANO==ANO.RELATORIO) %>% 
+               mutate(COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0))))+
+      geom_col(aes(x = ANO, y = VAR, fill = COR), 
+               na.rm = TRUE, color = "black",width = 0.30) +
+      theme_minimal()+
+      geom_hline(yintercept = 0) +
+      scale_y_continuous(breaks=NULL,limits=c(-.6,.6),labels = scales::label_percent(scale = 100))+
+      scale_x_discrete(breaks = NULL,expand = expansion(add = 1.5))+
+      guides(fill = FALSE) +
+      geom_text(aes(x = ANO, y = VAR, label=scales::percent(VAR,accuracy = 0.1),vjust = ifelse(VAR < 0, 1.25, -0.25)),size=3)+
+      labs(title= "Anual",x = NULL, y = NULL) +
+      scale_fill_manual(values = c("firebrick", "dodgerblue4"))+
+      theme(panel.spacing = unit(1, "cm", data = NULL),
+            plot.title = element_text(size = 18,
+                                      face = "bold",
+                                      hjust = 0.5))
+    
+    grid.arrange(GFVARINT_MES,GFVARINT_ANO,GFVARMES_INT,GFVARANO_INT, ncol=2,widths=c(4,1),heights= c(1.4,4))
+    
+```
+
+Entre os meses de outubro e dezembro de 2022, as operações aéreas internacionais apresentaram o seguinte desempenho: outubro fechou com menos 17,7%, novembro com menos 14,9% e dezembro com menos 15,3%, conforme indicado na Figura 5. A aviação comercial internacional nos principais aeroportos brasileiros operou com 68,6% do volume pré-pandemia (31,4% abaixo do volume de 2019).
+
+#### Aviação comercial geral
+
+Desde o início da pandemia em 2020, a aviação geral apresentou maior resiliência aos efeitos restritivos das medidas sanitárias impostas pelo Estado e, na mesma medida, maior velocidade de recuperação das operações aéreas. Em 2022, apenas o mês de janeiro apresentou desempenho inferior ao de 2019. Nos demais meses do ano, as operações da Aviação Geral registraram volume igual ou superior ao de 2019, tendo contribuído significativamente para a retomada da demanda nacional.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,fig.width=15,fig.height=8}
+
+BDS_VAR_2019_GERAL <- MOV_GERAL %>% filter(ANO %in% c(2019), MES=="JAN")
+BDS_VAR_2022_GERAL <- MOV_GERAL %>% filter(ANO %in% c(ANO.RELATORIO), MES=="JAN")
+BDS_VAR_ANO_GERAL <- bind_rows(BDS_VAR_2019_GERAL,BDS_VAR_2022_GERAL) %>% 
+  transmute(ANO=as.factor(ANO), TOTAL=TOTAL,VAR=(BDS_VAR_2022_GERAL$TOTAL-BDS_VAR_2019_GERAL$TOTAL)/BDS_VAR_2019_GERAL$TOTAL)
+
+BDS_GERAL_VAR <- bind_cols(MOV_GERAL %>% filter(ANO %in% c(2019)),MOV_GERAL %>% filter(ANO %in% c(ANO.RELATORIO)) %>% select(MOV)) %>% 
+  transmute(TOTAL=TOTAL,ANO=MES,MOV19=MOV...4,MOV22=MOV...5) %>% mutate(VAR= (MOV22-MOV19)/MOV19)%>% 
+  mutate(ANO= factor(ANO, levels = c("JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ")),
+         COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0)))
+
+
+
+GFVARANO_GERAL <-  
+  ggplot(BDS_VAR_ANO_GERAL)+                                                                                                 
+  geom_col(aes(x=ANO, y=TOTAL, fill = ANO),width = .9, position = position_dodge(preserve = "single"))+                
+  scale_y_continuous(labels = comma_format(big.mark = "."))+ 
+  scale_x_discrete(expand = expansion(add = .7))+
+  geom_richtext(aes(x=ANO, y=78000, label= format(TOTAL,big.mark="."), group=ANO),size=5.5, position = position_dodge(width = .9), angle=90)+
+  theme_classic() + 
+  theme(panel.background=element_rect(fill = "#F0F8FF")
+  ) +
+  labs(caption = "  ", x = NULL, y = NULL   
+  ) +
+  theme(legend.position = "none",
+        plot.caption = element_text(size = 28))+
+  scale_fill_manual(values = cores)
+
+
+GFVARMES_GERAL <- 
+  MOV_GERAL %>% filter(ANO %in% c(2019, ANO.RELATORIO)) %>%
+  ggplot()+
+  geom_col(aes(x=MES, y=MOV, fill = ANO), position = position_dodge(preserve = "single"))+
+  scale_y_continuous(labels = comma_format(big.mark = ".")) +
+  coord_cartesian(xlim = c(1,12))+
+  geom_richtext(aes(x=MES, y=8000, label = ifelse(MOV>999,format(MOV,big.mark="."),MOV), group=ANO),size=3, position = position_dodge(width = .9), angle=90)+
+  theme_classic()+
+  theme(legend.title    = element_text(size = 8)
+        ,legend.text     = element_text(size = 12)
+        ,legend.key.size = unit(0.3, "cm"),
+        axis.title.y = element_text(size = 15)
+  ) +
+  labs( x = NULL, y = "Movimentos - aviação geral"
+       ,fill = "ANO") +
+  theme(legend.position = "bottom",
+        legend.title=element_blank(),
+        plot.caption = element_text(hjust = .65,
+                                    face = "bold"))+
+  scale_fill_manual(values = cores)             
+
+
+
+
+
+
+
+GFVARGERAL_MES <- 
+  ggplot(BDS_GERAL_VAR)+
+  geom_col(aes(x = ANO, y = VAR, fill = COR), 
+           na.rm = TRUE, color = "black",width = 0.30) +
+  theme_minimal()+
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(limits=c(-.3,.3),labels = scales::label_percent(scale = 100))+
+  scale_x_discrete(breaks = NULL)+
+  coord_cartesian(xlim = c(1,12))+
+  guides(fill = FALSE) +
+  geom_text(aes(x = ANO, y = VAR, label=scales::percent(VAR,accuracy = 0.1),vjust = ifelse(VAR < 0, 1.25, -0.25)),size= 3)+
+  labs(title= "Mensal",x = NULL, y = "Var. 2019/2022") +
+  scale_fill_manual(values = c("firebrick", "dodgerblue4"))+
+  theme(panel.spacing = unit(1, "cm", data = NULL),
+        plot.title = element_text(size = 18,
+                                  face = "bold",
+                                  hjust = 0.5),
+        axis.title.y = element_text(size = 15))
+
+
+
+GFVARGERAL_ANO <- 
+  ggplot(BDS_VAR_ANO_GERAL %>% filter(ANO==ANO.RELATORIO) %>% 
+           mutate(COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0))))+
+  geom_col(aes(x = ANO, y = VAR, fill = COR), 
+           na.rm = TRUE, color = "black",width = 0.30) +
+  theme_minimal()+
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(breaks=NULL,limits=c(-1.5,1.5),labels = scales::label_percent(scale = 100))+
+  scale_x_discrete(breaks = NULL,expand = expansion(add = 1.5))+
+  guides(fill = FALSE) +
+  geom_text(aes(x = ANO, y = VAR, label=scales::percent(VAR,accuracy = 0.1),vjust = ifelse(VAR < 0, 1.25, -0.25)),size=3.5)+
+  labs(title= "Anual",x = NULL, y = NULL) +
+  scale_fill_manual(values = c("dodgerblue4","firebrick"))+
+  theme(panel.spacing = unit(1, "cm", data = NULL),
+        plot.title = element_text(size = 18,
+                                  face = "bold",
+                                  hjust = 0.5))
+
+
+grid.arrange(GFVARGERAL_MES,GFVARGERAL_ANO,GFVARMES_GERAL,GFVARANO_GERAL, ncol=2,widths=c(4,1),heights= c(1.4,4))
+
+```
+
+A Figura 6 apresenta o volume de operações de pouso e decolagem deste segmento da aviação nos principais aeródromos brasileiros: com destaque para fevereiro, com volume 18,7% superior ao de 2019, e setembro, com volume 18,1% superior ao de 2019.
+
+As operações da aviação geral nos principais aeroportos brasileiros em 2022 alcançou um desempenho 9,5% acima do volume pré-pandemia.
+
+-   No TOTAL de operações aéreas do SISCEAB, considerando os voos e sobrevoos realizados no espaço aéreo brasileiro, o ano de 2022 fechou 5,2% acima do volume registrado em 2019;
+-   Considerando as operações de pouso e decolagem nos 34 principais aeroportos brasileiros, os segmentos da Aviação Comercial Doméstica e Internacional fecharam 2022 10,2% e 31,4% abaixo do volume registrado em 2019, respectivamente; e
+-   A Aviação Geral, considerando as operações de pouso e decolagem nos 34 principais aeroportos brasileiros, fechou 2022 9,5% acima do volume registrado em 2019.
+
+### Ranking dos aeroportos
+
+O ranking dos aeroportos leva em consideração o número de pousos e decolagens registrados ao longo de um ano nos aeroportos brasileiros. Em 2022, destacaram-se com um aumento significativo no número de operações os aeroportos de Congonhas e Santos Dumont. Em Congonhas, o volume de operações aumentou em 55% em relação ao ano anterior, enquanto no Santos Dumont, houve um aumento de 49,4% nas operações de pouso e decolagem.
+
+A Figura 7 apresenta o Ranking dos quarenta principais aeródromos brasileiros, indicando a variação anual dessas operações entre 2022 e 2021.
+
+O Aeroporto de Navegantes, aparece em 27º no ranking, com a maior variação em comparação ao ano anterior: 205,9% de crescimento. Em seguida, outro aeroporto da Região Sul: Curitiba, que aparece em 13º no ranking, com crescimento de 60,5% em relação a 2021. Por fim, Congonhas, com a terceira maior variação, registrando crescimento de 55% em 2022, em comparação a 2021.
+
+Dos aeródromos elencados, apenas cinco registraram volume de operações inferior a 2021: Ponta Grossa (-20,2%), Jundiaí (-7,3%), Farol de São Tomé (-6,1%), Bacacheri (-5,1%) e, por fim, Pirassununga (-3,3%) - todos com vocação para aeronaves dos segmentos de aviação geral e militar.
+
+    
+
+![Imagem teste](imagens/fig13.jpg)
+
+### Participação de movimentos por FIR
+
+Ao se analisar a participação dos três segmentos de aviação (comercial, geral e militar) nas FIR brasileiras entre 2020 e 2022, é possível identificar um crescimento da participação da aviação comercial nas FIR continentais. Apenas a FIR-AO apresentou menor variação nesse share, devido à característica da sua demanda, essencialmente de aviação comercial internacional.
+
+    
+
+![Imagem teste](imagens/fig14.jpg)
+
+Com a retomada da participação dos voos comerciais, a aviação geral manteve-se, em média, com tendência de queda no share, conforme indicado na Figura 8.
+
+Quanto aos movimentos por FIR, é possível dividir as cinco FIR brasileiras em dois grupos: de um lado, as FIR Amazônica, Brasília e Recife, que apresentaram volume de operações aéreas superiores ao volume de 2019; e, por outro lado, as FIR Curitiba e Atlântico, que ainda operam com volume aquém ao observado no período pré-pandemia.
+
+A Figura 9 detalha os movimentos de tráfego aéreo por FIR brasileira, apresentando a variação mensal observada e, também, a variação do total anual em comparação ao ano de 2019.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE,fig.width=15,fig.height=8}
+
+#GRÁFICO DE MOVIMENTOS  FIR (4)
+
+
+
+GFVAR_FIR <- 
+  TOTAL_MOV_SISC_FIR%>% filter(ANO %in%c(2019,2022)& FIR!="SISCEAB")%>%
+  mutate(FIR=factor(FIR,levels = c("SISCEAB","FIR Atlântico", "FIR Amazônica","FIR Recife", "FIR Curitiba","FIR Brasília"))) %>% 
+  ggplot()+
+  geom_col(aes(x=FIR, y=TOTAL, fill = ANO), position = "dodge", width = .3)+
+  scale_y_continuous(breaks = NULL,limits = c(0,1200000))+
+  
+  geom_label(aes(x=FIR, y=900000,group=ANO, label = format(TOTAL, big.mark=".")), size = 3,
+             hjust = 0.5,
+             position = position_dodge(width = 0.3),angle = 90)+
+  theme_minimal() +
+  theme(legend.title    = element_text(size = 8) 
+        ,legend.text     = element_text(size = 8)
+        ,legend.key.size = unit(0.3, "cm")
+  ) +
+  labs(title = "Anual ", x = NULL, y = NULL
+       ,fill = "ANO") +
+  theme(legend.position = "bottom",
+        legend.title=element_blank(),
+        legend.text     = element_text(size = 14),
+        plot.title = element_text(size = 15,
+                                  face = "bold",
+                                  hjust = 0.5))+
+  scale_fill_manual(values = cores)+
+  coord_flip()
+
+
+
+
+BDS_ANO_2019_FIR <- TOTAL_MOV_SISC_FIR %>% filter(ANO %in% c(2019))
+BDS_ANO_2022_FIR <- TOTAL_MOV_SISC_FIR %>% filter(ANO %in% c(2022))
+BDS_VAR_ANO_FIR <- bind_cols(BDS_ANO_2019_FIR,BDS_ANO_2022_FIR) %>% 
+  transmute(FIR=FIR...1, TOTAL19=TOTAL...3,TOTAL22= TOTAL...6, VAR=(TOTAL22-TOTAL19)/TOTAL19) %>% 
+  mutate(COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0)))%>%
+  mutate(FIR=factor(FIR,levels = c("SISCEAB","FIR Brasília", "FIR Curitiba", "FIR Recife", "FIR Amazônica","FIR Atlântico")))
+
+
+GFVAR_FIR_ANO <- 
+BDS_VAR_ANO_FIR %>% filter(FIR!="SISCEAB") %>%
+  mutate(FIR=factor(FIR,levels = c("FIR Atlântico","FIR Amazônica","FIR Recife", "FIR Curitiba","FIR Brasília"))) %>%
+  ggplot()+
+  geom_col(aes(x = FIR, y = VAR, fill = COR), 
+           na.rm = TRUE, color = "black",width = 0.20) +
+  theme_void()+
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(limits=c(-1.8,1.5),labels = scales::label_percent(scale = 100))+
+  scale_x_discrete(breaks = NULL)+
+  guides(fill = FALSE) +
+  geom_text(aes(x = FIR, y = VAR, label=scales::percent(VAR,accuracy = 0.1),hjust = ifelse(VAR < 0, 1.25, -0.25)),size= 3.5)+
+  labs(caption= "  ",title= "Var. 2019/2022",x = NULL, y = NULL) +
+  scale_fill_manual(values = c("firebrick", "dodgerblue4"))+
+  theme(plot.title = element_text(size = 15,
+                                  face = "bold",
+                                  hjust = 0.5),
+        plot.caption = element_text(size = 31))+
+  coord_flip()
+
+
+
+GFVAR_FIR_MES <- 
+VAR_MES_FIR %>% filter(ANO=="2022"&FIR!="SISCEAB") %>% 
+  
+  ggplot()+
+  geom_line(aes(x=MES, y=MOV,group=FIR, color=FIR),size=1.1)+
+  scale_y_continuous(labels = comma_format(big.mark = ".", decimal.mark = ","),breaks = seq(0, 60000, by = 5000), limits = c(0,58000))+
+  scale_color_manual(values = CORESJURISDICAO)+
+  theme_classic() +
+  labs(title= "Mensal", x = NULL, y = "Movimentos - FIR"
+       ,fill = NULL) +
+  theme(legend.position = "bottom",
+        legend.title=element_blank(),
+        legend.key.size = unit(7,"mm"),
+        legend.text     = element_text(size = 14),
+        plot.title = element_text(size = 15,
+                                  face = "bold",
+                                  hjust = 0.5),
+        axis.title.y = element_text(size = 15))+
+  scale_fill_manual(values = CORESJURISDICAO)
+
+
+grid.arrange(GFVAR_FIR_MES,GFVAR_FIR,GFVAR_FIR_ANO, ncol=3,widths=c(3,1,1))
+```
+
+A FIR Brasília se destaca com volume bem superior às demais FIR, representado no gráfico pela distância entre a linha amarela e as outras linhas abaixo. Fechando 2022 com um total de 564.324 operações aéreas, a FIR-BS obteve um movimento 12,1% superior ao de 2019.
+
+Com a implementação da nova circulação na TMA-SP, em maio de 2021, um importante fluxo para Guarulhos, que era transferido pelo ACC-CW diretamente para o APP-SP, passou a receber o serviço também do ACC-BS, que, então, os transferem ao APP-SP. Adicionalmente, outro fluxo importante, que antes seguia via FIR-CW e APP-RJ, com as alterações no espaço aéreo da Região Rio (setorização vertical), passou a transitar via ACC-BS, a rota mais curta. Esses dois "novos" fluxos contribuíram para o aumento do volume de aeronaves que evoluíram pela FIR-BS em 2022.
+
+A FIR Atlântico, por sua vez, apresenta um volume de operações aéreas bem inferior às demais FIR, representado no gráfico pela distância entre a linha roxa e as demais linhas acima. Fechando 2022 com um total de 41.709 operações aéreas, a FIR-AO obteve um movimento 25,3% inferior ao de 2019. Com um fluxo exclusivamente composto por voos internacionais, a FIR-AO ainda sofre com os efeitos da pandemia na retomada da aviação comercial internacional.
+
+A FIR Curitiba também apresenta dificuldades na recuperação das operações aéreas, fechando 2022 com um total de 370.712 operações aéreas, 21,2% abaixo de 2019. A FIR Amazônica, ainda que apresente um volume menor que as demais FIR continentais, obteve uma importante recuperação, fechando 2022 com 311.837 operações aéreas, 17,1% acima do total de 2019. Por fim, a FIR Recife apresentou resultado ligeiramente superior (2,7%) ao de 2019, com 327.980 movimentos.
+
+Vale a pena ressaltar que o total de movimentos do SISCEAB não equivale à soma do total de movimentos das FIR, uma vez que um voo específico pode passar por mais de uma FIR e, desta forma, seria contabilizado mais de uma vez. A metodologia utilizada pelo DECEA exclui a duplicidade dos voos que transitarem em mais de uma FIR. Além disso, os voos realizados exclusivamente na área do CRCEA-SE (por exemplo, voos da ponte aérea SBRJ-SBSP) não são computados para nenhuma das FIR sobrejacentes.
+
+### Rotas mais voadas pela aviação comercial
+
+A Figura 10 apresenta as vinte rotas mais voadas pela aviação comercial no espaço aéreo brasileiro em 2022 . Destaca-se que houve um aumento significativo no último ano de rotas envolvendo o aeroporto de Congonhas, cuja participação passou de seis para dez rotas entre as vinte mais movimentadas do país. Guarulhos, que se destacou como o aeroporto com mais participações no ranking de 2021, reduziu de doze para oito rotas no ranking de 2022.
+
+Com isso, Congonhas e Guarulhos mantiveram seu predomínio no ranking das rotas mais voadas no SISCEAB, totalizando dezoito participações em 2022, mesmo índice do ano anterior. Respectivamente em 15º e 16º lugares no ranking de 2022, apenas os trechos SBRJ-SBBR e SBBR-SBRJ não incluem um dos dois principais aeroportos da TMA-SP entre os pares de cidade mais voados.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Rotas mais voadas em 2022(40)
+
+
+BDS_15_2021_FIR <- BDS_KPI_15_DF %>% filter(movimentos.ano %in% c(2021))%>%
+  group_by(movimentos.fluxo)%>%group_by(movimentos.fluxo)%>%
+  arrange(movimentos.fluxo)
+BDS_15_2022_FIR <- BDS_KPI_15_DF %>% filter(movimentos.ano %in% c(2022))%>%
+  group_by(movimentos.fluxo)%>%group_by(movimentos.fluxo)%>%
+  arrange(movimentos.fluxo)
+
+BDS_VAR_15_FIR <- bind_cols(BDS_15_2021_FIR,BDS_15_2022_FIR) %>% 
+mutate(VAR=(movimentos.total_movimentos...32-movimentos.total_movimentos...9)/movimentos.total_movimentos...9)%>% mutate(COR = as.factor(ifelse(VAR > 0, yes = 1, no = 0)))
+
+COLOCACAO <- data.frame(COLOCACAO=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20))
+
+
+
+GFVAR_ROTA <- BDS_VAR_15_FIR %>% filter(movimentos.total_movimentos...32>4400)%>%
+ggplot()+
+  geom_col(aes(x = reorder(movimentos.fluxo...8, movimentos.total_movimentos...32), y = VAR, fill = COR), 
+           na.rm = TRUE, color = "black",width = 0.20) +
+  theme_void()+
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(limits=c(-1.8,1.5),labels = scales::label_percent(scale = 100))+
+  scale_x_discrete(breaks = NULL)+
+  guides(fill = FALSE) +
+  geom_text(aes(x = movimentos.fluxo...8, y = VAR, label=scales::percent(VAR,accuracy = 0.1),hjust = ifelse(VAR < 0, 1.25, -0.25)),size= 3.5)+
+  labs(title= "Var. 2021/2022",x = NULL, y = NULL) +
+  scale_fill_manual(values = c("dodgerblue4","firebrick"))+
+  theme(plot.title = element_text(size = 15,
+                                  face = "bold",
+                                  hjust = 0.5),
+        plot.caption = element_text(size = 31))+coord_flip()
+
+
+
+
+
+GF_ROTA <- ggplot(BDS_VAR_15_FIR%>% filter(movimentos.total_movimentos...32>4400) ,
+         aes(x=movimentos.fluxo...31,y=movimentos.total_movimentos...32))+
+  geom_col(aes(reorder(movimentos.fluxo...31,movimentos.total_movimentos...32),
+               movimentos.total_movimentos...32), fill = "#191970")+
+    geom_label(aes(x = movimentos.fluxo...31, y = movimentos.total_movimentos...32,
+                   label =format(movimentos.total_movimentos...32,big.mark=".") ),
+               color = "#112446",hjust=1.5, size=3) +
+   geom_text(aes(x = 20:1, y = -200,
+                   label =1:20),
+               color = "#112446",hjust=1.5, size=3)+
+  scale_y_continuous(limits=c(-500,19000), labels = NULL)+
+  labs(y = NULL, x = "Rotas mais voadas", title = " ") +
+  theme_classic() +
+  theme(plot.title = element_text(size = 10),
+        axis.title.y = element_text(size = 15),
+        axis.title.x = element_text(size = 15,
+                                    face = "bold"))+
+  coord_flip()
+
+grid.arrange(GF_ROTA,GFVAR_ROTA, ncol=2,widths=c(3,1.5))
+
+```
+
+A ponte aérea Rio-São Paulo, que une os aeroportos de Santos Dumont e Congonhas, segue com as rotas mais voadas no país e que mais cresceram na comparação com o ano anterior: em 2022, foram 14.708 voos no sentido São Paulo (aumento de 78,2% em relação a 2021) e 14.640 no sentido Rio (aumento de 77,3% em relação a 2021).
+
+As rotas entre Congonhas e Porto Alegre, que sequer apareciam no ranking de 2021, dobraram de movimento em 2022, totalizando 6.349 voos no sentido Porto Alegre e 6.325 voos no sentido São Paulo, ocupando os terceiro e quarto lugares do ranking.
+
+Todas as vinte rotas do ranking apresentaram crescimento em 2022, na comparação com o ano anterior. Vale destacar que as oito primeiras rotas do ranking, conectando o aeroporto de Congonhas aos aeroportos de Santos Dumont, Porto Alegre, Confins e Brasília, tiveram crescimento acima de 70% em comparação a 2021.
+
+### Densidade do tráfego aéreo
+
+A densidade do tráfego aéreo nacional representa a concentração de demanda no espaço aéreo. O cálculo leva em consideração a quantidade de voos controlados no ano em função do tamanho da área analisada (em km2).
+
+Os dados apresentados na Figura 11 não levaram em consideração a área da FIR-AO ao calcular a densidade do CINDACTA III e do SISCEAB.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, }
+
+#GRÁFICO DE DENSIDADE (5)
+
+
+
+ggplot()+
+  geom_sf(data=brasil)+
+  geom_polygon(data = JURISDICAO, aes(x=LONGITUDE,y = LATITUDE, fill=REGIONAL),color="#666666",alpha=0.5)+
+   geom_polygon(data = VERTICES_CRCEA_SE, aes(x=LONGITUDE,y = LATITUDE, fill=REGIONAL),color="#666666",alpha=0.8)+
+   geom_point(data = TEXTOJURISDIÇÃO, aes(x=Y, y=X))+
+   geom_segment(LINHATEXTOJURISDIÇÃOCRCEA,mapping=aes(x=x1, y=y1, xend=x2, yend=y2))+
+   geom_label(data = TEXTOJURISDIÇÃO,aes(x=Y,y = X, label = VALOR),size=4,label.padding = unit(0.20, "lines"),label.r = unit(0.5, "lines"))+
+   geom_label(data = TEXTOJURISDIÇÃOCRCEA,aes(x=Y,y = X, label = VALOR),size=4,label.padding = unit(0.20, "lines"),label.r = unit(0.5, "lines"))+
+   geom_label(aes(x=-70, y=-24, label="SISCEAB"),label.r = unit(0.5, "lines"))+
+  theme_void()+
+  scale_fill_manual(values = CORESJURISDICAO)
+
+
+
+```
+
+A complexidade do setor de controle e a carga de trabalho (workload) do ATCO impactam diretamente a densidade do respectivo espaço aéreo. Em regra, áreas menos complexas suportam um número maior de voos (capacidade declarada) do que aquelas com maior complexidade. Quanto maior a densidade, maior o número de setores ATC necessários no espaço aéreo e maior a necessidade de manter os setores ATC desagrupados.
+
+O CRCEA-SE é o Regional com jurisdição sobre a área com a maior densidade do espaço aéreo brasileiro: responsável pelas TMA Rio de Janeiro e São Paulo, áreas muito menores que as FIR brasileiras e que concentram o maior fluxo de tráfego aéreo do país.
+
+### Composição da frota
+
+A OACI publicou no Doc 4444 (Procedimentos para Serviços de Navegação Aérea) os critérios de categorização das aeronaves para fins de separação devido à esteira de turbulência, resumidos na figura seguinte.
+
+    
+
+![Imagem teste](imagens/fig15.jpg)
+
+A composição da frota é responsável pela formação do "mix de aeronaves", um fator significativo na determinação da capacidade aeroportuária.
+
+Aeródromos com uma composição heterogênea de aeronaves podem criar um cenário que torna inviável o uso da separação mínima entre os pousos sucessivos, especialmente se houver alta frequência de aeronaves com tempos maiores de ocupação de pista ou de aeronaves pesadas (H e J), que exigem maiores separações na aproximação final devido à esteira de turbulência.
+
+A separação mínima entre aeronaves na aproximação final depende de vários fatores, como o tipo de aeronave, as condições meteorológicas, o espaçamento de pista disponível e o procedimento de pouso utilizado. Em geral, a separação mínima entre duas aeronaves de performance semelhantes que estão realizando pousos consecutivos na mesma pista é de dois a três minutos ou cerca de 5 a 6 milhas náuticas (NM) de distância, mas as regras exatas variam de acordo com o contexto e a situação específica.
+
+A Figura 13 mostra a participação das categorias de aeronaves nos principais aeródromos brasileiros, em 2022. Nos aeroportos com maior frequência de voos da aviação comercial, verifica-se um mix de aeronaves formado majoritariamente pela categoria média (Confins, Campinas e Guarulhos, por exemplo). Nos aeródromos com maior participação de voos dos segmentos militar e geral, o mix é formado especialmente por aeronaves de categoria leve (Campo de Marte, Pampulha, São José dos Campos e Jacarepaguá, entre outros).
+
+    
+
+![Imagem teste](imagens/fig16.jpg)
+
+### Previsão de demanda
+
+Com o objetivo de contribuir para o planejamento ATM e a tomada de decisões gerenciais do DECEA e das organizações subordinadas, as previsões de demanda anual e quinquenal, bem como as previsões de demanda para os principais aeroportos, são disponibilizadas e atualizadas regularmente pelo CGNA . A previsão anual poderá sofrer atualizações mensais no portal, enquanto a previsão quinquenal (para os próximos cinco anos) é atualizada uma vez por ano, sempre no mês de janeiro.
+
+A previsão quinquenal publicada no último Relatório de Performance considerava três cenários para 2022: no cenário pessimista, eram esperados1.472.083 movimentos; no realista, 1.517.744; e, no cenário otimista, 1.672.091 movimentos. No entanto, 2022 registrou um total de 1.677.760 movimentos, sendo superada a previsão otimista em 5.669 movimentos e fechando o ano 5,2% acima do volume de tráfego aéreo registrado em 2019.
+
+Esse resultado positivo pode ser associado, entre outras causas, à elevação de demanda da aviação geral, que superou o resultado de 2019 durante quase todos os meses de 2022, com exceção apenas do mês de janeiro (-5%).
+
+Para 2023, a previsão quinquenal considera novamente três possíveis cenários até 2027, e a demanda nacional deve operar entre 5,8% (cenário pessimista) e 15,2% (cenário otimista) acima de 2019, conforme indica a Figura 14: são esperados 1.686.149 movimentos no cenário pessimista; 1.761.648 movimentos no realista; e 1.837.147, no cenário otimista.
+
+    
+
+![Imagem teste](imagens/fig17.jpg)
+
+Vale ressaltar que as previsões de demanda podem ser afetadas, positiva ou negativamente, pelo desempenho da economia nacional, uma das variáveis analisadas pelo CGNA. Segundo estimativas do Banco Mundial , o Produto Interno Bruto brasileiro cresceu 3,0% em 2022 e, para 2023, espera-se crescimento de 0,8%.
+
+A FIR Brasília, por sua vez, registrou em 2022 um volume 12,4% acima do movimento observado em 2019. Além do crescimento da aviação geral e da recuperação dos principais aeroportos, parte do fluxo do Nordeste que se dirigia à TMA-SP pela área do Rio de Janeiro passou a transitar pela FIR-BS. Além disso, com a implementação da nova TMA São Paulo em 2021, o fluxo do sul para Guarulhos foi deslocado para entrar pelo setor BS-17 da FIR Brasília, ao noroeste da TMA-SP.
+
+    
+
+![Imagem teste](imagens/fig18.jpg)
+
+A previsão referente à FIR Curitiba indica que o movimento observado em 2019 deve atingir o mesmo patamar apenas no ano de 2024. Caso a versão otimista prevaleça, essa recuperação poderia ocorrer no fim de 2023.
+
+    
+
+![Imagem teste](imagens/fig19.jpg)
+
+A FIR Recife registrou, em 2022, um volume de operações 3,4% acima do movimento observado em 2019.
+
+    
+
+![Imagem teste](imagens/fig20.jpg)
+
+A previsão para a FIR Atlântico indica que a recuperação do movimento de 2019 deve ocorrer em 2026. A retomada da aviação internacional tem sido mais lenta que a da aviação doméstica. A versão otimista da previsão continua indicando que essa recuperação poderia ocorrer em 2024.
+
+    
+
+![Imagem teste](imagens/fig21.jpg)
+
+Por fim, no ano de 2022, a FIR Amazônica registrou operações 18,5% acima do movimento de 2019.
+
+    
+
+![Imagem teste](imagens/fig22.jpg)
+
+## ATCO
+
+Dentre os fatores que afetam os principais indicadores de performance, destaca-se o fator humano do sistema ATM, em especial o ATCO, que é o responsável por garantir a segurança e a eficiência do fluxo de tráfego aéreo em um aeroporto ou em uma determinada porção do espaço aéreo.
+
+A eficiência e a eficácia do serviço de controle de tráfego aéreo dependem diretamente do dimensionamento correspondente às tarefas, assim como da qualificação dos controladores. Nesse contexto, a gestão de pessoal adequada é parte importante para garantir que o sistema ATM opere com uma performance cada vez melhor.
+
+No Brasil, os ATCO estão ligados aos principais prestadores de serviço de navegação aérea (PSNA): a Aeronáutica, a INFRAERO e a NAV Brasil. Além desses PSNA, existem alguns outros de menor vulto, tais como o Exército e a Marinha.
+
+Cabe destacar que a NAV Brasil é uma empresa pública federal, vinculada ao Ministério da Defesa, com a finalidade de implementar, administrar, operar e explorar a infraestrutura aeronáutica destinada à prestação de serviços de navegação aérea no Brasil. Criada a partir da cisão parcial da INFRAERO, é responsável por fornecer serviços de navegação aérea, incluindo o gerenciamento do espaço aéreo e o controle de tráfego aéreo, em suas dependências, que estão distribuídas em todo o território nacional.
+
+### Evolução de ATCO
+
+Atualmente, o efetivo de ATCO do COMAER é de 4.396 profissionais. No decorrer dos últimos 5 anos (2018 a 2022), houve um aumento de ATCO acumulado de 18,7%. De 2021 para 2022, houve um aumento de 4,9%.
+
+    
+
+![Imagem teste](imagens/fig23.jpg)
+
+A Figura 21 apresenta o total de controladores alocados em organizações externas à estrutura do COMAER, ou seja, vinculados a outros PSNA, em 2022, sendo a NAV Brasil, com 625 controladores, e outros PSNA, com 170 controladores.
+
+    
+
+![Imagem teste](imagens/fig24.jpg)
+
+A Figura 22 mostra a evolução quantitativa do efetivo de ATCO em cada Regional de 2020 a 2022.
+
+    
+
+![Imagem teste](imagens/fig25.jpg)
+
+A Figura 23, por sua vez, apresenta a variação percentual do efetivo de cada Regional de 2020 a 2022. Em 2021, os CINDACTA I e IV se mantiveram com o mesmo efetivo operacional, enquanto os CINDACTA II, III e CRCEA-SE aumentaram seu efetivo em 2,9%, 3,2% e 5,6%, respectivamente. Em 2022, todos os Regionais aumentaram seu efetivo.
+
+    
+
+![Imagem teste](imagens/fig26.jpg)
+
+Através desses gráficos, observa-se que o CINDACTA I apresenta o maior efetivo de ATCO, enquanto o CINDACTA IV possui o menor efetivo. Todos os Órgãos Regionais registraram um incremento nos seus efetivos entre 2020 e 2022: o CRCEA-SE apresentou um crescimento mais constante na comparação entre 2021 x 2020 e 2022 x 2021, com aumentos de 5,6% e 5,2%, respectivamente.
+
+### Nível de proficiência de inglês dos ATCO
+
+O DECEA busca capacitar seus controladores de tráfego aéreo de acordo com os requisitos de proficiência linguística estabelecidos pela OACI através do DOC 9.835 (Manual on the Implementation of Language Proficiency Requirements). Nesses requisitos, tem-se que o NP (Nível de Proficiência) varia de 1 a 6, sendo o NP 4 o nível mínimo operacional desejado.
+
+É importante esclarecer que o ATCO brasileiro possui capacitação para executar as comunicações padrões de controle de tráfego aéreo em inglês, utilizando-se da fraseologia prevista na legislação em vigor, independente do NP alcançado.
+
+Outrossim, ressalta-se que a Aeronáutica instituiu ações de caráter sistêmico nas escolas de formação e pós-formação, bem como nas Organizações Regionais, para capacitar e avaliar os controladores de acordo com os requisitos da OACI.
+
+Essas medidas incluem investimentos em treinamento e capacitação de pessoal, além de outras ações necessárias para alcançar metas palpáveis a médio e longo prazos. O objetivo dessas iniciativas é garantir a segurança e a eficiência do tráfego aéreo, bem como o atendimento às necessidades das operações aéreas internacionais em todo o país.
+
+A seguir, é apresentado o nível de operacionalidade referente à proficiência da língua inglesa.
+
+    
+
+![Imagem teste](imagens/fig27.jpg)
+
+Entre os Regionais, o CINDACTA II apresentou o maior percentual de ATCO com NP igual ou superior a 4, com 54%. O CINDACTA IV, por sua vez, aparece com o menor percentual, 32%. Entre os anos de 2020 e 2022, todos os Regionais aumentaram seu percentual relativo ao nível de operacionalidade na língua inglesa.
+
+### Fatores meteorológicos
+
+A aviação é um dos setores econômicos mais sensíveis aos fatores meteorológicos. Historicamente, grande parte dos avanços e desenvolvimentos ocorridos na previsão do tempo tem sido para a melhoria dos serviços meteorológicos voltados ao setor da navegação aérea. Nesse sentido, as informações meteorológicas são indispensáveis ao planejamento dos voos e essenciais à segurança e à eficiência das operações aéreas.
+
+As informações meteorológicas devem atender aos critérios de disponibilidade, pontualidade e qualidade que se referem, respectivamente, à acessibilidade e ao período abrangido nas informações, ao cumprimento dos horários preconizados para o envio das mensagens e ao grau de precisão dessas informações.
+
+O Portal REDEMET é o meio oficial disponibilizado pelo DECEA para a consulta de informações e produtos de meteorologia, de modo rápido, eficaz e seguro, com uma interface amigável aos usuários.
+
+As mensagens METAR e SPECI são monitoradas em relação aos índices de disponibilidade e pontualidade, enquanto a mensagem TAF é controlada também quanto à sua qualidade.
+
+O Sistema de Gestão da Qualidade do DECEA estabelece a meta de pontualidade das mensagens METAR/SPECI e TAF em 93% e 98%, respectivamente.
+
+Quanto ao índice mínimo de acerto dos previsores nas mensagens TAF, segundo a ICA 105-3 (Verificação Operacional), a meta estabelecida é de 70%.
+
+    
+
+![Imagem teste](imagens/fig28.jpg)
+
+Por conta de sua dimensão territorial e posição geográfica, entre outros aspectos, o Brasil é bastante afetado por tempestades magnéticas, sendo o país com a maior incidência de descargas elétricas atmosféricas (raios) do mundo, que são provocadas pelas nuvens cumulonimbus (CB).
+
+O radar meteorológico é uma excelente ferramenta para identificar, monitorar e analisar essas tempestades, que causam grande impacto às operações aéreas. Os produtos de radares meteorológicos podem ser acessados por meio do Portal REDEMET. A seguir, tem-se o percentual de disponibilidade de alguns dos principais radares meteorológicos do SISCEAB durante o ano de 2022.
+
+    
+
+![Imagem teste](imagens/fig29.jpg)
+
+Outras mensagens importantes são o AIRMET e o SIGMET, que servem para alertar sobre a ocorrência ou a previsão de fenômenos meteorológicos em rota, que possam afetar a segurança das operações aéreas, tais como trovoadas, formação de gelo, montanha obscurecida, cinzas vulcânicas, ondas orográficas e turbulência. A ICA 105-17 (Centros Meteorológicos) define os critérios para elaboração dessas mensagens, discriminando os fenômenos e suas intensidades.
+
+No ano de 2022, foram elaboradas mais de 58.000 mensagens SIGMET e AIRMET em apoio às operações aéreas no SISCEAB.
+
+    
+
+![Imagem teste](imagens/fig30.jpg)
+
+Reveste-se também de grande importância o assessoramento meteorológico para desvios em condições de tempo severo, em apoio às ações de tráfego aéreo adotadas no nível tático por ocasião de cenários operacionais com condições meteorológicas que impliquem na necessidade de se evitar um determinado espaço aéreo, com o objetivo de manter a eficiência operacional do SISCEAB.
+
+Tal assessoramento de meteorologia exerce papel fundamental na melhoria do processo de tomada de decisão colaborativa, bem como na mitigação dos efeitos do tempo severo nos fluxos de tráfego aéreo, evitando-se a descontinuidade da provisão do controle de tráfego. Baseia-se em prover briefings com ênfase nas condições meteorológicas severas que possam afetar um espaço aéreo específico de interesse do CGNA, bem como em manter a vigilância meteorológica sobre a área de interesse, monitorando e informando qualquer situação que indique o início, a intensificação, a tendência de deslocamento, a diminuição ou o término de formações de tempo severo.
+
+Em relação aos aeroportos, para que se avalie as condições meteorológicas, faz-se necessário estabelecer os critérios de teto e visibilidade. O Quadro 6 define os parâmetros considerados para as condições meteorológicas de voo visual (VMC) e por instrumentos (IMC), bem como condições marginais.
+
+    
+
+![Imagem teste](imagens/fig31.jpg)
+
+NOTA: Em função das diferenças dos critérios para cada aeroporto, o quadro anterior foi criado com o intuito de permitir a comparação das condições meteorológicas nos aeroportos.
+
+A Figura 28 apresenta, de acordo com os critérios de teto e visibilidade do quadro anterior, as condições meteorológicas de operação dos aeroportos, verificadas no período entre 1º de janeiro e 31 de dezembro de 2022.
+
+NOTA: Os percentuais menores que 3% não foram demonstrados no gráfico para uma melhor visualização, por serem de menor representatividade. As condições meteorológicas nos aeroportos brasileiros são, em geral, favoráveis às operações de tráfego aéreo, ressaltando que as condições IMC não são impeditivas para a operação de aeronaves.
+
+Todos os aeroportos analisados neste relatório que estão situados na jurisdição da FIR Recife apresentaram valores superiores a 90% de condições visuais durante o ano de 2022.
+
+    
+
+![Imagem teste](imagens/fig32.jpg)
+
+Em termos de operação VMC, o aeroporto de Palmas foi o que apresentou a melhor condição meteorológica em 2022: 98,2% do tempo operando em condições visuais (com teto igual ou superior a 1.500 ft e visibilidade de 5 km ou mais), seguido pelos aeroportos de São Luís (97,5%) e Fortaleza (97,0%).
+
+Já o aeroporto de Curitiba foi o que apresentou o maior período com restrições meteorológicas, operando 48% do tempo com algum tipo de restrição, seguido por Congonhas e Guarulhos, com 27,8% e 26,1%, respectivamente.
+
+### Projetos no SISCEAB
+
+A seguir, são apresentados alguns projetos com implantações recentes, ou a serem implementados, que possam se relacionar com a performance ATM do SISCEAB.
+
+### Total ATM
+
+Dentro da perspectiva da otimização da gestão baseada em performance, o DECEA mantém uma estreita relação com a Organização Europeia para a Segurança da Navegação Aérea (EUROCONTROL), por meio de Acordos de cooperação mútua, que viabilizaram uma assessoria valiosa na área de gestão de performance, da capacidade e do gerenciamento dos recursos humanos.
+
+Fruto de um destes acordos, o projeto Total ATM possui como objetivo aprimorar o planejamento e o aproveitamento da mão de obra, focando no aumento da produtividade na prestação dos serviços de Controle de Tráfego Aéreo enquanto atende aos requisitos internacionais do gerenciamento do risco à fadiga.
+
+O conceito Total ATM foi criado no Maastricht Upper Area Control Centre (MUAC), com visão preparada para o crescimento da demanda, implicando em melhoria nas áreas de performance, na capacidade e no gerenciamento de recursos, resultando, assim, na modernização do Gerenciamento do Tráfego Aéreo (ATM) no SISCEAB.
+
+O ACC-CW é o órgão ATC que vem implementando os conceitos de gestão trazidos pela EUROCONTROL, que já resultaram em diversos benefícios, dentre os quais:
+
+-   
+
+    ```         
+     Alteração na metodologia de confecção da escala do ATCO, que resulta em conhecimento relacionado aos processos de planejamento, execução, checagem e readequação das escalas operacionais;
+    ```
+
+-   Melhoria da eficiência da escala do ATCO, com diminuição do número de ATCO escalados e a redução da carga de trabalho mensal;
+
+-   Criação de um setor de pós-operações na ATM do Regional; e
+
+-   Benchmarking entre os órgãos, com oportunidades de melhorias em processos compartilhados.
+
+Os próximos passos do projeto se concentram na expansão dos conceitos e das boas práticas aos demais Regionais. Será implantada uma ferramenta que aperfeiçoará o processo de elaboração e manutenção da escala dos ATCO, bem como o planejamento de longo prazo das necessidades.
+
+### A-CDM
+
+O conceito A-CDM (Airport Collaborative Decision Making) transforma a maneira como os voos são geridos pela Torre de Controle por meio do compartilhamento de informações operacionais de forma colaborativa entre os elos envolvidos na operação.
+
+O A-CDM evolui a operação do modelo first come, first served (os voos que se declaravam prontos eram priorizados na fila de autorização) para o modelo best planned, best served (priorizando aqueles com planejamento mais eficiente). A TWR gerencia, atualiza e apresenta uma lista de pré-partida dos voos com base nos horários-alvo (TOBT) informados pelos usuários ou equipe de solo.
+
+Guarulhos foi o primeiro aeroporto brasileiro a implementar o A-CDM completando dois anos de operação em 5 de novembro de 2022, cujas orientações foram detalhadas pelo DECEA na AIC N31/22 - Operações em aeródromos A-CDM.
+
+Nesse período, foram implementados alguns indicadores de performance específicos para o A-CDM, capazes de medir objetivos relacionados à previsibilidade, pontualidade, capacidade e eficiência operacional no aeroporto, que seguem abaixo:
+
+a)  Solicitação e autorização antecipada de acionamento - percentual de voos que chamam para acionamento antes do início da janela de TSAT. Esse indicador ajuda a identificar tráfegos que causam um congestionamento na frequência, principalmente nas horas de pico do aeroporto.
+
+b)  Autorização de acionamento após janela de TSAT -- esse indicador mostra a eficiência da TWR na emissão da autorização de acionamento: qualquer autorização de acionamento posterior ao valor de TSAT +3 minutos é considerada não eficiente.
+
+c)  Aderência do AOBT ao primeiro TSAT - tempo médio entre o descalço e os respectivos primeiros TSAT recebidos, demonstrando os três pilares do A-CDM (previsibilidade, pontualidade e eficiência operacional) numa única medida. Quanto menor essa diferença, mais pontual, previsível e eficiente será a operação.
+
+Além de priorizar a eficiência, a previsibilidade e a pontualidade, os indicadores podem mostrar os pontos que necessitam de ações colaborativas de todos os parceiros para que o processo possa melhorar e, assim, entregar resultados consistentes. Isso envolve muitas vezes uma mudança cultural e a padronização dos procedimentos dos envolvidos, sendo essa padronização essencial para o avanço e a solidificação do conceito, que trará não apenas vantagens do ponto de vista econômico ou ambiental, mas principalmente ganhos para o usuário do serviço do transporte aéreo.
+
+### Rotas Diretas
+
+O conceito de Rotas Diretas (DCT) foi implementado no espaço aéreo brasileiro das FIR Brasília, Curitiba, Amazônica e Recife. Nas porções de espaço aéreo em que o conceito está aprovado, os usuários podem propor seus planos de voo operando fora das aerovias (DCT), buscando as menores trajetórias possíveis e aproando direto para os waypoints publicados.
+
+As condições e os requisitos para aplicação das Rotas DCT estão descritos na AIP Brasil. Na Figura 29, pode-se observar o espaço aéreo em verde, que corresponde à porção aprovada para Rotas DCT H24, e o espaço aéreo em vermelho, no qual apenas durante a madrugada é possível optar pelas Rotas Diretas
+
+    
+
+![Imagem teste](imagens/fig33.jpg)
+
+As Rotas DCT são uma parte essencial do conceito FRA (Espaço Aéreo de Rotas Livres), permitindo que as aeronaves voem diretamente de um ponto a outro, sem seguir rotas pré-definidas, tratando-se, portanto, de um estágio preliminar para o futuro do SISCEAB, com aumento da disponibilidade e da eficiência das operações aéreas no espaço aéreo brasileiro.
+
+### Integração dos UAS no SISCEAB
+
+Os Sistemas de Aeronaves Não Tripuladas (Unmanned Aircraft Systems - UAS) consistem em um conjunto composto por UA (aeronave não tripulada, também conhecida como drone), RPS (estação de pilotagem remota), enlace de pilotagem (link C2) e em seus componentes associados. São divididos em quatro categorias:
+
+-   Remotely Piloted Aircraft (RPA) -- subconjunto de aeronaves não tripuladas, pilotadas a partir de uma estação de pilotagem remota, com finalidade que não a de recreação, que seja capaz de ser acomodada ou integrada ao espaço aéreo;
+
+-   sUAS (Small Unmanned Aircraft Systems) -- subconjunto de aeronaves não tripuladas com peso máximo de decolagem menor ou igual a 25 Kg;
+
+-   Aeromodelos -- aeronaves não tripuladas, utilizadas para fins exclusivamente recreativos; e
+
+-   Aeronaves autônomas -- aeronaves não tripuladas, que não permitem a intervenção do piloto no gerenciamento do voo.
+
+Inicialmente, o desenvolvimento do UAS foi impulsionado pela aplicabilidade em operações militares, mas rapidamente percebeu-se um enorme potencial para emprego em infraestrutura, vigilância, telecomunicação, agricultura, segurança, busca e salvamento, mineração, entretenimento, bem como na mobilidade aérea urbana por meio do eVTOL (Eletric Vertical Takeoff and Landing).
+
+A rápida evolução do setor trouxe um grande desafio para o ATM: integrar a operação dessas aeronaves com as aeronaves tripuladas, por meio do desenvolvimento de novos sistemas, protocolos e tecnologias robustas e eficientes para o gerenciamento do tráfego aéreo.
+
+#### UTM
+
+O UTM (Unmanned Traffic Management) é definido como um subsistema do ATM, com o objetivo de proporcionar o gerenciamento seguro, econômico e eficiente de operações do UAS, por meio do fornecimento de facilidades e de um conjunto de serviços colaborativos entre os stakeholders, compreendendo funções aéreas e terrestres. O sistema possui a função de promover o gerenciamento das aeronaves não tripuladas, por meio da integração colaborativa de seres humanos, informação, tecnologia, instalações e serviços apoiados por comunicações, navegação e vigilância aéreas, terrestres e espaciais.
+
+Visando a implementação do UTM, o DECEA inaugurou, em 2016, o SARPAS, um aplicativo web considerado o precursor do UTM no Brasil, para registrar, identificar, planejar e aprovar os voos de drones no Brasil. Posteriormente, em 2022, esse sistema foi atualizado para sua nova versão, que possibilitou sua integração com outros sistemas de empresas, usuários, Instituições ou Órgãos reguladores, como ANAC e Ministério da Defesa.
+
+A Figura 30 a seguir apresenta o crescimento das solicitações de voos de drones, que foram de 139.292 solicitações em 2019 para 332.755 em 2022. Estima-se que, nos próximos quatro anos, o sistema receba acima de um milhão de solicitações. Esse aumento exponencial reforça a necessidade de estar atento à segurança nas operações aéreas de aeronaves tripuladas, principalmente no entorno de aeródromos.
+
+    
+
+![Imagem teste](imagens/fig34.jpg)
+
+Observando-se o registro de ocorrências envolvendo drones, ratifica-se a importância da implementação do UTM no Brasil de modo a gerenciar o acesso ao espaço aéreo dessa nova tecnologia, sem impactar a segurança nas operações de aeronaves tripuladas. A Figura 31 indica o número de ocorrências dessa natureza nos últimos anos, demonstrando que o crescimento no número de solicitações acompanhou as ocorrências envolvendo aeronaves não tripuladas.
+
+    
+
+![Imagem teste](imagens/fig35.jpg)
+
+#### UAM -- Mobilidade Aérea Urbana
+
+Considerando que a aviação é um segmento da sociedade que está em constante evolução, o DECEA vem trabalhando no projeto UAM -- Mobilidade Aérea Urbana, com o intuito de prover solução para integrar as operações de helicópteros, aeronaves de asa fixa e demais aeronaves do tipo eVTOL no mesmo espaço aéreo.
+
+As aeronaves eVTOL, além de elétricas, emitirão menos ruído e serão construídas com materiais mais tecnológicos. Atualmente, mais de 600 aeronaves foram encomendadas pela indústria, com a expectativa de que seus voos iniciem a partir de 2026. Com operações em trechos curtos, estima-se um aumento significativo no número de movimentos aéreos, com destaque para a área de São Paulo.
+
+Hoje, segundo dados da Associação Brasileira de Pilotos de Helicóptero (ABRAPHE), existem mais de 260 helipontos na região metropolitana de São Paulo. Nessa área, circulam mais de 400 helicópteros, o que representa mais de 2.200 operações aéreas diariamente. Com base nesses dados de voos de helicópteros, estima-se que o número de operações dessas aeronaves elétricas será ainda maior.
+
+Como forma de se preparar para esse novo ambiente, o plano é promover melhorias na estrutura do espaço aéreo e estabelecer novos requisitos em termos de comunicação, navegação e vigilância com enfoque na circulação de helicópteros, visando preparar o espaço aéreo de forma progressiva para a integração futura com o eVTOL.
+
+### Meio ambiente
+
+A OACI publicou algumas resoluções que ressaltam que os efeitos adversos da atividade de aviação civil ao meio ambiente podem ser reduzidos pela aplicação de medidas que levem em conta os avanços tecnológicos, um gerenciamento de tráfego aéreo mais eficiente, procedimentos operacionais mais adequados, planejamento correto dos aeroportos, gerenciamento ideal do uso do solo e de implementação de medidas de mercado. Para isso, os Estados devem se comprometer a produzir documentos com políticas na área ambiental.
+
+Além disso, por meio dessas resoluções, o Conselho da OACI dissemina as informações dos impactos ambientais presentes e futuros, incluindo tendências sobre o nível de ruído das aeronaves, advindas dos trabalhos do Comitê de Proteção Ambiental da Aviação.
+
+O DECEA publicou, em 2021, o Manual sobre Conceito do Espaço Aéreo (MCA 100-19), com diretrizes para a atuação do planejador de espaço aéreo que visam mitigar o nível de ruído e as emissões de gases poluentes pelas aeronaves.
+
+De acordo com a Lei 11.182, de 27 de setembro de 2005, a responsabilidade por questões ambientais relacionadas a ruído e emissões na aviação civil brasileira é da Agência Nacional da Aviação Civil (ANAC). Segundo o inciso X do artigo 8º desta Lei, cabe à ANAC: "X -- regular e fiscalizar os serviços aéreos, os produtos e processos aeronáuticos, a formação e o treinamento de pessoal especializado, os serviços auxiliares, a segurança da aviação civil, a facilitação do transporte aéreo, a habilitação de tripulantes, as emissões de poluentes e o ruído aeronáutico, os sistemas de reservas, a movimentação de passageiros e carga e as demais atividades de aviação civil."
+
+O DECEA também atua em questões ambientais, seja por iniciativa própria ou em conjunto com a ANAC:
+
+-   ao implementar trajetórias de voo mais curtas entre os aeroportos;
+-   ao viabilizar perfis ótimos de subida e descida para as diferentes categorias de aeronaves;
+-   ao conduzir projetos para aumentar a capacidade do espaço aéreo e das pistas de pouso e decolagem; e
+-   prestando um serviço ATM eficiente.
+
+DECEA já implementou diversas medidas de mitigação de impactos ambientais na aviação, que estão evidenciadas nas três edições do "Plano de Ação para a Redução das Emissões de CO2 da Aviação Civil Brasileira" . O Plano é constantemente atualizado e submetido à OACI a cada três anos, estando alinhado às recomendações dispostas na Resolução A39-2: "Declaração consolidada de políticas e práticas contínuas da OACI relacionadas à proteção ambiental."
+
+Os valores de redução anual total de consumo de combustível/emissões de CO2 relativos aos anos de 2019, 2020, 2021, são encontrados no quadro abaixo.
+
+    
+
+![Imagem teste](imagens/fig36.jpg)
+

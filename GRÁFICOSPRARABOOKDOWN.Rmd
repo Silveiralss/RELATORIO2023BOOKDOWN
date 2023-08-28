@@ -1099,7 +1099,7 @@ ANO.RELATORIO <- year(Sys.Date())-1
 
 # 2 GRÁFICO MOVIMENTO DA AVIAÇÃO COMERCIAL DOMÉSTICA
 
-```{r echo=FALSE, warning=FALSE, message=FALSE,fig.width=15,fig.height=8}
+```{r gf-1, echo=FALSE, warning=FALSE, message=FALSE,fig.width=15,fig.height=8}
 #gráfico MOVIMENTO DA AVIAÇÃO COMERCIAL DOMÉSTICA (1)
 #AJUSTAR A BDS PARA REPLICAR O GRÁFICO PARA OUTROS ANOS
 
