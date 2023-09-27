@@ -1,0 +1,95 @@
+
+
+# Conclusão
+
+O Relatório de Performance ATM do Sistema de Controle do Espaço Aéreo Brasileiro – 2022 apresenta uma análise dos dados de movimentos de tráfego aéreo e dos indicadores de performance ATM para o SISCEAB.
+
+O objetivo principal do trabalho foi o de sintetizar o conhecimento produzido por meio da Comissão de Performance ATM, apresentando uma visão geral da performance do SISCEAB, considerando os dados do ano de 2022, possibilitando uma análise gerencial macro do sistema, bem como por Organização Regional do DECEA.
+
+Foi possível constatar que houve a recuperação da demanda nacional e a retomada dos voos no cenário pós-covid (o “novo normal”), com o total de operações aéreas (voos e sobrevoos) no SISCEAB ficando 5,2% acima do volume registrado em 2019.
+
+Quanto à demanda dos 34 principais aeroportos do Brasil, foram identificados números muito próximos ao volume de operações de pouso e decolagem observado em 2019: a média móvel de operações ficou acima de 5.000 voos por dia. A aviação Comercial Doméstica nesses aeroportos brasileiros operou com 89,8% do volume pré-pandemia (10,2% abaixo do volume de 2019), enquanto as operações da aviação Geral alcançaram um desempenho 9,5% acima do volume pré-pandemia.
+
+Em 2022, destacaram-se o aumento do número de operações nos aeroportos de Congonhas e Santos Dumont, que tiveram, respectivamente, 55% e 49,4% mais operações de pouso e decolagem em relação ao ano de 2021.
+
+Quanto aos movimentos por FIR, enquanto as FIR Amazônica, Brasília e Recife apresentaram volume de operações aéreas superiores ao de 2019, as FIR Curitiba e Atlântico ainda operam com volume aquém ao observado no período pré-pandemia.
+Considerando as vinte rotas mais voadas pela aviação comercial no espaço aéreo brasileiro em 2022, foi destacado que houve um aumento significativo no último ano de rotas envolvendo o aeroporto de Congonhas, cuja participação passou de seis para dez rotas entre as vinte mais movimentadas do país. 
+
+No quesito densidade de tráfego aéreo, o CRCEA-SE é o Regional com jurisdição sobre a área com a maior densidade do espaço aéreo brasileiro, pois engloba as TMA Rio de Janeiro e São Paulo, áreas menores que as FIR brasileiras e que concentram o maior fluxo de tráfego aéreo do país. 
+Analisando a previsão de demanda quinquenal para o SISCEAB em 2022, verificamos que o cenário otimista para o SISCEAB foi superado em 5.669 movimentos, fechando o ano 5,2% acima do volume de tráfego aéreo registrado em 2019. Esse resultado positivo pode ser associado, entre outras causas, à 
+
+elevação de demanda da aviação Geral, que superou o resultado de 2019 durante quase todos os meses do ano, com exceção apenas do mês de janeiro (-5%).
+
+A gestão de pessoal de controle de tráfego aéreo tem relação direta com o desempenho do sistema ATM. Atualmente, o efetivo de ATCO do COMAER é de 4.396 profissionais. No decorrer dos últimos 5 anos (2018 a 2022), houve um aumento de ATCO acumulado de 18,7%. De 2021 para 2022, houve um aumento de 4,9%. Quanto ao nível de Inglês desses profissionais, o CINDACTA II apresentou o maior percentual entre os Regionais, com 54% de controladores com NP 4 ou superior. Entre os anos de 2020 e 2022, todos os Regionais aumentaram seu percentual relativo ao nível de operacionalidade na língua inglesa.
+
+Quanto à meteorologia, todos os aeroportos analisados neste relatório que estão situados na jurisdição da FIR Recife apresentaram valores superiores a 90% de condições visuais. Em termos de operação VMC, o aeroporto de Palmas foi o que apresentou a melhor condição meteorológica em 2022: 98,2% do tempo operando em condições visuais, seguido pelos aeroportos de São Luís (97,5%) e Fortaleza (97,0%). Já o aeroporto de Curitiba foi o que apresentou o maior período com restrições meteorológicas, operando 48% do tempo com algum tipo de restrição, seguido por Congonhas e Guarulhos, com 27,8% e 26,1%, respectivamente.
+
+Alguns projetos diretamente relacionados a performance ATM do SISCEAB foram destacados, como TOTAL ATM, A-CDM, Rotas Diretas, Integração do UAS no SISCEAB, Meio Ambiente e o Seminário de Performance ATM.
+
+Os indicadores de performance formam uma das ferramentas de gestão mais utilizadas para medir o desempenho. A seguir, serão mostrados os indicadores, dentro de suas respectivas áreas:
+
+**PREVISIBILIDADE:**
+	
+KPI 01 – Pontualidade de partida – (Meta: 80%) – Em 2022, a média de pontualidade de partida nos vinte aeroportos monitorados foi de 84,3%, inferior à média de 87,4% de 2021. Destacaram-se neste indicador, apresentando índices de pontualidade de partida acima de 88%, os aeroportos de Confins (88,2%), Campo Grande (88,8%) e Cuiabá (88,8%).
+
+KPI 14 – Pontualidade de chegada – (Meta: 80%) – A maioria dos aeroportos monitorados teve performance superior àquela registrada em 2021, ainda que tenham processado um número maior de operações aéreas no último ano. A média de pontualidade de chegada ficou em 67,7%, 1,9% acima da média de 2021.
+
+KPI 15 – Variabilidade do tempo de voo – Com a recuperação da demanda nacional em 2022, 24 rotas apresentaram mais de 4.000 movimentos. A rota entre SBGR-SBCT apresentou o melhor desempenho no indicador de variabilidade do tempo de voo.
+
+**EFICIÊNCIA:**
+
+KPI 02 – Tempo adicional de taxi-out – (Meta: até 3 min) – A média do SISCEAB no tempo adicional de taxi-out passou de 2,92 minutos, em 2021, para 3,65 minutos, em 2022. Essa variação foi puxada principalmente pelos índices de Confins, Santos Dumont e Congonhas, que aumentaram, respectivamente, 54,8%, 55,2% e 84,7% seus tempos adicionais.
+
+KPI 13 – Tempo adicional de taxi-in – (Meta: até 3 min) – Todos os aeroportos monitorados apresentaram tempo adicional de taxi-in dentro da meta prevista. Os aeroportos com melhores desempenhos foram Porto Seguro (1,08 min), Curitiba (1,17 min) e Congonhas (1,3 min). 
+Tempo geral de táxi - Os CINDACTA II e IV registraram valores médios de tempos adicionais de chegada e partida dentro da meta de 3 min para ambos.
+
+KPI 08 – Tempo adicional em TMA – (Meta: até 4 min) –   Em 2022, os aeroportos de Florianópolis e Galeão aparecem como destaques no indicador, apresentando tempo adicional de chegada na TMA em 2022 de apenas 2,87 e 2,86 minutos, respectivamente. A média do SISCEAB em 2022 para o KPI08 ficou em 3,01 minutos no C40 e 4 minutos no C100.
+
+**CAPACIDADE:**
+
+KPI 06 – Capacidade do espaço aéreo - Este indicador não passa por atualizações constantes, pois alterações na capacidade declarada do espaço aéreo são provocadas em consequência de implementações de novos conceitos de espaço aéreo, novas tecnologias e conceitos ATM, ou, ainda, de modificações na setorização da área de controle. Em 1º de dezembro de 2022, a região da FIR-AO que abrangia as aerovias UL206 e UM661 retornou oficialmente à jurisdição da FIR-RE. Em 16 de junho de 2022, uma porção da FIR-AZ (no Setor AZ-02) passou à jurisdição da FIR-AO. Não houve atualização dos números de referência, pico ou das CHS dos setores envolvidos das FIR Amazônica e Atlântico até dezembro de 2022. Não houve mudanças nas CHS das FIR Amazônica, Atlântico, Brasília, Curitiba e Recife em 2022.
+
+KPI 09 – Capacidade declarada de chegada - A infraestrutura aeroportuária é um fator determinante para a capacidade de pouso dos aeroportos. Aqueles que possuem pistas paralelas, como o aeroporto de Brasília, ou pistas com operações segregadas independentes, como o aeroporto de Guarulhos, apresentam uma maior capacidade de absorção de aeronaves durante o pouso em comparação aos aeroportos que possuem apenas uma pista de pouso. As capacidades declaradas de Guarulhos e Recife aumentaram para 34 e 22 pousos por hora, respectivamente.
+
+KPI 10 – Taxa-pico de chegada - Os destaques para o KPI10 foram os aeroportos de Brasília, Guarulhos e Congonhas, que registraram os maiores índices de taxa-pico em 2022. O aeroporto de Brasília, com capacidade declarada de 48 pousos por hora, vem operando com pouco mais de 50% de sua capacidade nas horas de pico. O aeroporto de Congonhas em 2021 aparecia com a terceira maior taxa-pico, 17 pousos por hora; em 2022, o aeroporto da capital paulista apresentou a maior variação no indicador dentre todos, com a taxa-pico passando para 23 pousos por hora. 
+Medidas ATFM - No Brasil, as principais causas de aplicação de medidas ATFM têm sido por alta demanda de tráfego aéreo (horas de pico) e meteorologia adversa (chuva forte sobre o aeródromo, desvios de formações meteorológicas, nevoeiros etc.). A quantidade de medidas aplicadas em 2022 foi quase metade (55%) da registrada em 2019. Em relação a 2021, a quantidade de medidas ATFM aplicadas foi muito similar, apesar de ter sido verificada demanda muito superior em 2022.
+
+**CUSTO-BENEFÍCIO:**
+
+IDBR 06 – Horas de Login x horas ATCO - Nos ACC, o melhor resultado apresentado foi o ACC-BS, com 54%, mesmo tendo sido o único que reduziu seu rendimento em relação ao ano anterior. O ACC-CW foi o que apresentou maior crescimento, indo de 41% em 2021 para 52% em 2022, seguido de Recife, que subiu de 45% em 2021 para 53% em 2022. Nos APP, Recife destacou-se com resultado igual a 70% em 2022. Vale ressaltar também que os APP-BR, APP-CT, APP-NT, APP-SV e APP-BE melhoraram sua performance, com destaque para Brasília, que aumentou seu rendimento em 16%, ou seja, passou de 40% em 2021 para 56% em 2022. Nas TWR, Congonhas e Florianópolis tiveram os melhores resultados, com 63%. 
+IDBR 08 – Índice de operacionalidade do ATCO – (Meta: 80%) –  Este índice vem melhorando a cada ano, registrando 82,9% em 2020 e, em 2022, alcançando 85,4%. Vale destacar que todos os Regionais se mantém acima da meta estabelecida de 80%. Foram apresentados também, em forma de ranking de operacionalidade, os resultados do IDBR08 para os Destacamentos que possuem órgãos ATC, subordinados a cada Regional. O DTCEA-PV foi o Destacamento com melhor percentual operacional, com 98,2% de operacionalidade.
+
+**PARTICIPAÇÃO DA COMUNIDADE ATM:**
+
+PESQUISA DE SATISFAÇÃO DO SISCEAB – Foi identificado que os produtos mais utilizados pelos avaliadores foram o portal AISWEB (com 80% “uso sempre” e 18% “uso eventualmente); o aplicativo FPL-BR (com 50% “uso sempre” e 17% “uso eventualmente”); e os Sistemas ATM do SISCEAB (com 34% “uso sempre” e 28% “uso eventualmente”). Os serviços melhor avaliados quanto à qualidade na prestação dos serviços de navegação aérea foram a segurança operacional (Safety), a qualidade das instruções emitidas pelos órgãos de controle e a clareza nas comunicações de rádio, que receberam notas 4 ou 5 de, respectivamente, 329, 319 e 303 dos 416 entrevistados. Além disso, as Rotas Diretas e o projeto CPDLC nas FIR Recife e Amazônica apresentaram 90% e 85% de aprovação dos entrevistados, respectivamente. Uma das avaliações mais valiosas para o DECEA é o grau de satisfação que a comunidade ATM tem da prestação dos serviços de navegação aérea de uma forma geral. Como resultado geral da pesquisa de satisfação de 2022, 73,2% consideram ótima (nota 5) ou boa (nota 4) a prestação dos serviços de navegação aérea pelo DECEA para a sociedade. Esses resultados indicaram que a maioria dos participantes está satisfeita com a qualidade dos produtos e dos serviços disponibilizados pelo DECEA, bem como com a organização do espaço aéreo brasileiro, com a inclusão da comunidade ATM nos processos de planejamento, implantação e operação do SISCEAB e com as recentes mudanças implementadas no SISCEAB. 
+
+**SEGURANÇA OPERACIONAL**
+
+Os indicadores da área de segurança operacional (Safety) mostraram que, embora 2022 tenha apresentado índices de incursão em pista, alertas TCAS RA e incidentes de risco potencial maiores que os dois anos anteriores, eles se mantiveram dentro das Metas de Desempenho da Segurança Operacional (MDSO) estabelecidas para cada PSNA no período analisado, garantindo a segurança operacional na provisão do ANS, função prioritária do DECEA. Em 2023, espera-se um crescimento no número de reportes com a implementação do Portal Único de Notificações, integrando os sistemas existentes de reportes da ANAC e do COMAER, permitindo a análise interativa dos dados e das informações, visando garantir a continuada disponibilidade de dados e informações de segurança operacional para apoiar as atividades de gerenciamento da segurança operacional no Brasil. 
+
+**SEGURANÇA DA AVIAÇÃO**
+
+Cabe ressaltar também a inclusão da área de Segurança da Aviação (Security), com indicadores AVSEC. Em 2022, foram reportadas 132 ocorrências no SISCEAB, incluindo reportes de órgãos da NAV Brasil e outros externos à Aeronáutica. Destaca-se que em nenhum dos casos houve danos irreversíveis e, por isso, todos os reportes ajudaram no trabalho de prevenção de futuras ocorrências.
+Este relatório buscou harmonizar as operações ATM entre os Regionais e seus diversos órgãos de controle, servindo como referência para a definição de metas baseadas nas melhores práticas observadas. Para alcançar uma melhoria significativa no desempenho, é essencial desenvolver um processo de gestão que envolva profissionais de todos os níveis em ATM. Nesse sentido, compreender como o desempenho do SISCEAB é medido oferecerá suporte para a adoção de ações que aprimorem os indicadores e o gerenciamento de tráfego aéreo.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

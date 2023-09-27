@@ -1,0 +1,182 @@
+# ANEXO A
+
+ÓRGÃOS ATS
+
+A seguir, são discriminados os órgãos ATS por Regional. Quando APP ou TWR também prestarem serviço de informação de voo como rádio (AFIS) não constará na relação dos AFIS a localidade já citada como APP ou TWR.
+
+
+CINDACTA I
+
+O CINDACTA I é composto por 1 ACC, 8 APP, 10 TWR e 14 AFIS. Em determinados horários, algumas TWR operam como AFIS, conforme especificado na tabela abaixo: 
+
+
+![Imagem teste](imagens/fig91.jpg)
+
+CINDACTA II
+
+O CINDACTA II é composto por 1 ACC, 9 APP, 14 TWR, 22 AFIS e 2 R-AFIS. Em determinados horários, alguns APP e TWR operam como AFIS, conforme especificado na tabela abaixo:
+
+![Imagem teste](imagens/fig92.jpg)
+
+
+CINDACTA III
+
+O CINDACTA III é composto por 2 ACC, 11 APP, 12 TWR, 13 AFIS e 1 R-AFIS. Em determinados horários, alguns APP operam como AFIS, conforme especificado na tabela abaixo:
+
+![Imagem teste](imagens/fig93.jpg)
+
+CINDACTA IV
+
+O CINDACTA IV é composto por 1 ACC, 9 APP, 9 TWR, 19 AFIS e 6 R-AFIS. Em determinados horários, alguns APP e TWR operam como AFIS, conforme especificado na tabela abaixo:
+
+![Imagem teste](imagens/fig94.jpg)
+
+CRCEA-SE
+
+O CRCEA-SE é composto por 5 APP, 12 TWR, 7 AFIS e 1 D-TWR. Em determinados horários, alguns APP e TWR operam como AFIS, conforme especificado na tabela abaixo:
+
+![Imagem teste](imagens/fig95.jpg)
+
+# ANEXO B 
+
+DESCRITIVO DAS FIR BRASILEIRAS
+
+Neste Anexo são apresentadas de forma resumida as características das circulações aéreas nas Regiões de Informação de Voo (FIR) do espaço aéreo brasileiro.
+
+FIR Brasília (SBBS)
+
+![Imagem teste](imagens/fig96.jpg)
+
+Localizada na região central do país, o espaço aéreo da FIR Brasília (SBBS) se divide em dezessete Setores ATC, que são, por sua vez, organizados em três Regiões distintas: a Região São Paulo, a Região Brasília e a Região Rio. O período de maior complexidade para o tráfego aéreo é durante o verão, com a ocorrência de tempo severo ao redor da TMA-SP.
+
+A Região São Paulo (RSP) é a mais movimentada da FIR, cuja principal função é realizar o sequenciamento dos voos com destino ao aeroporto de Guarulhos, contando com sete Setores ATC. Na RSP, o ACC-BS é responsável pela prestação dos serviços de navegação aérea aos usuários:
+
+a)	decolando da TMA-SP com destino ao Nordeste do país, à TMA-BH e à Europa (BS-01);
+
+b)	chegando aos aeroportos da TMA-SP, procedentes das Regiões Norte e Nordeste do país, das TMA-BR e TMA-BH, da Europa e das Américas, realizando, assim, o sequenciamento do maior fluxo com destino a Guarulhos (BS-04 e BS-02);
+
+c)	decolando da TMA-SP com destino ao Norte do país, às TMA-BR, TMA-CG e TMA-CY, e às Américas Central e do Norte (BS-03, BS-05 e BS-06); e
+d)	chegando aos aeroportos da TMA-SP, procedentes das Américas (Norte, Central e Sul) e do Norte e Noroeste do país (BS-17).
+
+A Região Brasília (RBR) tem como principal função o controle dos voos partindo ou se dirigindo à TMA-BR e possui sete Setores ATC. Na RBR, o ACC-BS é responsável pela prestação dos serviços de navegação aérea aos usuários:
+
+a)	chegando à TMA-BR, realizando, assim, o sequenciamento para o aeroporto de Brasília dos voos procedentes da TMA-SP e do Sul e Centro-Oeste do país, bem como orientando aeronaves que saem ou chegam na TMA Anápolis (BS-07 e BS-08);
+
+b)	procedentes do Norte do país ou de países das Américas do Norte e Central, com destino a Brasília ou aos aeroportos do Sudeste (BS-09 e BS-10);
+
+c)	chegando do Nordeste do país ou da Europa, com destino à TMA-BR, e vice-versa (BS-11);
+
+d)	chegando em Brasília, procedentes das TMA-RJ e TMA-BH (BS-12); e
+
+e)	decolando de Brasília, com destino às TMA-SP, TMA-RJ e TMA-BH (BS-13).
+
+Por fim, a Região Rio (RRJ), cuja função principal é a transição dos voos partindo e chegando do Nordeste e Europa para a RSP. A RRJ conta com seis Setores ATC, sendo o BS-16 L e o BS-16 U os setores mais movimentados da FIR. Na RRJ, o ACC-BS é responsável pela prestação dos serviços de navegação aérea aos usuários:
+
+a)	chegando às TMA-BH e TMA-RJ, procedentes da TMA-BR, do Norte do país, ou das Américas do Norte e Central (BS-14 L e U);
+
+b)	chegando às TMA-SP, TMA-BH e TMA-RJ, procedentes da TMA-BR, do Norte e Nordeste do país, ou da Europa e das Américas do Norte e Central, e vice-versa (BS-15 L e U); e
+
+c)	evoluindo entre a TMA-SP, Nordeste e Europa; TMA-SP e TMA-BH; TMA-RJ, Norte do país e Américas do Norte e Central; e TMA-BR e TMA Vitória e Porto Seguro (BS-16 L e U).
+
+
+FIR Curitiba (SBCW)
+
+![Imagem teste](imagens/fig97.jpg)
+
+Localizada na Região Sul do país, o espaço aéreo da FIR Curitiba (SBCW) se divide em dezoito Setores ATC, incluindo duas porções flexíveis de espaço aéreo que podem estar alocadas a diferentes setores, conforme a demanda, conhecidas como Setores FLEX (CW-6F e CW-9F).
+
+A SBCW faz fronteira com quatro FIR internacionais: MONTEVIDEO, RESISTENCIA, ASSUNCION e LA PAZ, gerando coordenações envolvendo os tráfegos internacionais que cruzam o espaço aéreo brasileiro e os países do sul da América do Sul. Os períodos de maior complexidade para o tráfego aéreo ocorrem no verão, com a ocorrência de tempo severo ao redor das TMA-SP e TMA-RJ, e, no inverno, marcado por restrições meteorológicas nos aeródromos da Região Sul, como Porto Alegre, Florianópolis, Navegantes e Curitiba. O ACC-CW é responsável pela prestação dos serviços de navegação aérea aos usuários:
+
+a)	de voos internacionais evoluindo entre Brasil, especialmente TMA-SP e TMA-RJ, e Uruguai e Argentina, bem como orientando aeronaves que saem ou que chegam na TMA Porto Alegre (CW-01 e CW-02);
+
+b)	evoluindo entre as TMA Porto Alegre e Florianópolis (CW-13 e CW-04);
+
+c)	no sequenciamento de chegada para Congonhas, bem como controlando partidas e chegadas da TMA Florianópolis (CW-05);
+
+d)	chegando e partindo na TMA-RJ, bem como monitorando os cruzamentos internacionais, envolvendo voos da Europa e da África (CW-06);
+
+e)	chegando e partindo nas TMA-RJ, TMA-BH e Vitória, bem como parte das chegadas procedentes da Europa e do Nordeste para as TMA-RJ e TMA-SP (CW-07 e CW-08);
+
+f)	decolando da TMA-SP com destino ao Sul do país e ao Uruguai, Argentina, Bolívia, Chile ou Paraguai (CW-09 e CW-11);
+
+g)	chegando em Guarulhos oriundos da região Sul, bem como da América do Sul e parte da América Central (CW-10);
+
+h)	chegando e partindo na TMA Campo Grande, conduzindo, ainda, tráfegos internacionais entre a TMA-SP e Bolívia e Peru (CW-12 e CW-13);
+
+i)	evoluindo entre as TMA Campo Grande e Londrina (CW-15);
+
+j)	chegando e partindo nas TMA Londrina, Foz e Curitiba, recebendo o fluxo de tráfego internacional com destino à TMA-SP (CW-16 e CW-17); e
+
+k)	chegando em Guarulhos, sequenciando para o CW-10, controlando, também, as aproximações e partidas para as TMA Curitiba e Florianópolis (CW-18).
+
+FIR Recife (SBRE)
+
+![Imagem teste](imagens/fig98.jpg)
+
+Localizada na Região Nordeste do país, o espaço aéreo da FIR Recife (SBRE) se divide em quinze Setores ATC, sendo operacionalmente organizada a partir de duas áreas distintas: a litorânea e a continental.
+
+Os meses de férias escolares – janeiro, julho e dezembro – e as temporadas de festividades culturais – como os períodos do carnaval e do São João – apresentam considerável aumento na demanda da FIR, especialmente da aviação geral. Nesses picos, o alto volume de aeronaves nos setores é gerenciado pela FMC/CGNA por meio de medidas ATFM.
+
+Na área litorânea da FIR Recife se encontram os Setores RE-11 e RE-12, que possuem a maior densidade na FIR, justificando as ocasionais necessidades da divisão vertical desses setores, em que são observados os voos evoluindo de e para as capitais nordestinas.
+
+Na área continental, o fluxo de aeronaves de companhias aéreas é majoritariamente de cruzeiro, com poucas subidas e descidas. Os maiores setores da FIR (RE-05, RE-06, RE-09 e RE-10) situam-se nessa área, o que caracteriza a permanência de cada aeronave por até uma hora e meia com um mesmo controlador, quando esses setores estão eventualmente agrupados por conta do baixo volume de tráfego.
+
+O ACC-RE é responsável pela prestação dos serviços de navegação aérea aos usuários:
+
+a)	de voos internacionais evoluindo entre a América do Sul e a Europa, bem como aos voos que saem das TMA Teresina, Fortaleza, Natal e Recife ou chegam para seus respectivos aeródromos (RE-01, RE-02, RE-03, RE-04, RE-05, RE-06, RE-09 e RE-10);
+
+b)	de voos que chegam às TMA Recife, Maceió, Aracaju, Salvador, Ilhéus e Porto Seguro ou saem delas (RE-07, RE-08, RE-11, RE-12 e RE-13);
+
+c)	de voos internacionais que cruzam a FIR SBRE ou partem dela rumo à América do Norte (RE-01, RE-03, RE-04, RE-05, RE-06, RE-09 e RE-10); e
+
+d)	que chegam ou saem pelo oeste, norte ou leste da TMA Vitória, bem como aos voos internacionais que se deslocam entre a América do Sul e a África (RE-14 e RE-15).
+
+
+FIR Atlântico (SBAO)
+
+![Imagem teste](imagens/fig99.jpg)
+
+Localizada sobre o Oceano Atlântico, o espaço aéreo da FIR Atlântico (SBAO) se divide em três Setores ATC, cada um deles subdividido em três Setores FLEX, que podem ser configurados da melhor forma para atender a demanda. Faz fronteira com seis FIR internacionais: ABIDJAN, ROCHAMBEAU, DAKAR, LUANDA, JOANESBURGO e MONTEVIDEO, gerando coordenações envolvendo os tráfegos internacionais que cruzam o espaço aéreo brasileiro e órgãos de controle da América do Sul e África. Além disso, a base militar  da Ilha de Ascensão (TWR FHAW) fica dentro da sua área de jurisdição.
+
+Os períodos de maior complexidade ocorrem no verão, com a ocorrência de tempo severo ao redor das TMA-SP e TMA-RJ, bem como da incidência da Zona de Convergência Intertropical (ZCIT) ao norte da FIR, e, no inverno, marcado por restrições meteorológicas nos aeródromos da Região Sul, como Porto Alegre, Florianópolis, Navegantes e Curitiba. O ACC-AO é responsável pela prestação dos serviços de navegação aérea aos usuários:
+a)	em cruzamentos internacionais, envolvendo voos entre Brasil/América do Sul e Europa/África; e
+
+b)	evoluindo nas áreas de rotas aleatórias RNAV do Oceano Atlântico (AORRA), monitorando os voos entre Brasil/América do Sul e África/Oriente Médio.
+
+
+FIR Amazônica (SBAZ)
+
+![Imagem teste](imagens/fig100.jpg)
+
+Localizada ao norte do país, o espaço aéreo da FIR Amazônica (SBAZ) se divide em quinze Setores ATC, que são, por sua vez, organizados em três Regiões distintas: a Região Belém, a Região Manaus e a Região Porto Velho. A SBAZ faz fronteira com sete FIR internacionais: CAIENA, PARAMARIBO, GEORGETOWN, MAIQUETIA, BOGOTÁ, LIMA e LA PAZ, gerando coordenações envolvendo os tráfegos internacionais que cruzam o espaço aéreo brasileiro e os países do norte da América do Sul. 
+
+O período de maior complexidade é no chamado “inverno amazônico”, período compreendido entre os meses de outubro a abril, quando o calor e a umidade ocasionam formações pesadas e fortes chuvas, que acabam se traduzindo em desvios das aeronaves, esperas em voo e alternados de pouso.
+A Região Belém (RBL) possui cinco setores e sobrepõe as TMA Belém (única com operação radar), São Luís, Palmas, Teresina, Macapá, Marabá e Santarém. Na RBL, o ACC-AZ é responsável pela prestação dos serviços de navegação aérea aos usuários:
+
+a)	evoluindo entre as FIR SBBS e SBRE (AZ-01, AZ-02 e AZ-05);
+
+b)	evoluindo entre a FIR-AO e a FIR-AZ (AZ-02);
+
+c)	evoluindo entre as TMA Belém e Macapá (AZ-03); 
+
+d)	evoluindo entre as TMA Belém e Santarém (AZ-03 e AZ-04); e
+
+e)	de voos internacionais, chegando e partindo do Brasil para aeroportos da América do Sul, Central e do Norte (AZ-04 e AZ-05).
+
+A Região Manaus (RMU) também possui cinco Setores ATC, e tem como principal função o controle dos voos partindo ou se dirigindo à TMA-MN e os cruzamentos internacionais. Na RMU, o ACC-AZ é responsável pela prestação dos serviços de navegação aérea aos usuários:
+
+a)	evoluindo entre as FIR-BS e FIR-AZ (AZ-06);
+
+b)	chegando ou partindo da TMA-MN, bem como cruzamentos internacionais envolvendo aeroportos das Américas do Sul, Central e do Norte (AZ-07, AZ-08, AZ-09 e AZ-10). É no AZ-08 que se localiza o aeródromo de Parintins (SWPI), que atrai forte demanda em evento local anual; e
+
+c)	evoluindo entre o espaço aéreo brasileiro e o venezuelano ou colombiano (AZ-10).
+
+Por fim, a Região Porto Velho (RPH), que possui cinco Setores ATC e cuja função principal é a transição dos voos partindo e chegando na TMA Cuiabá. Na RPH, o ACC-AZ é responsável pela prestação dos serviços de navegação aérea aos usuários:
+
+a)	evoluindo entre o espaço aéreo brasileiro e o peruano ou boliviano (AZ-11 e AZ-12);
+
+b)	chegando ou partindo na TMA Porto Velho, bem como monitorando movimento entre Brasil e Bolívia (AZ-13 e AZ-14); e
+
+c)	chegando ou partindo na TMA Cuiabá (AZ-15).
+
+
